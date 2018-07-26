@@ -6,12 +6,27 @@ A C# based code generation and deployment framework where you describe your the 
 Further, validation is performed so that conflicting and invalid descriptions are detected (for example a property can't be both required and optional), and testing requirements can be inferred.
 
 ## GameArchitect.Tasks.* ##
-
+Infrastructure required to create and run tasks, where a task takes a parameter object containing at least an options object.
 
 ## GameArchitect.Tasks.CodeGeneration.* ##
+Code generation templates for a variety of languages.
+- CSharp
+- C++ (CXX)
+- Unreal (C++)
 
+### GameArchitect.Tasks.CodeGeneration.SpatialOS ###
+SpatialOS schema generation.
 
-## GameArchitect.Design.Support.* ##
+### GameArchitect.Tasks.CodeGeneration.OpenAPI ###
+Generation of Swagger/OpenAPI specification files for web APIs.
+
+### GameArchitect.Tasks.CodeGeneration.Yuml ###
+Generation of UML diagrams in yuml markup.
+
+### GameArchitect.Tasks.CodeGeneration.JSONSchema ###
+Generation of JSON Schema files.
+
+## GameArchitect.Design.* ##
 A series of attributes to be used in your entities to better describe their behavior.
 
 - Tag  
@@ -93,7 +108,7 @@ A series of network related attributes.
     Further information about how this type should be handled on the network.
 
 
-## GameArchitect.Design.Support.Unreal ##
+### GameArchitect.Design.Unreal ###
 Unreal specific attributes. Should be used only when the automatic behavior needs to be overridden. For example a struct in C# will automatically be emitted as an UnrealStruct.
 - UnrealStruct
 - UnrealComponent
@@ -104,10 +119,22 @@ Unreal specific attributes. Should be used only when the automatic behavior need
 - UnrealFunction
 - UnrealBaseClass
 
-## GameArchitect.Design.Support.SpatialOS ##
+### GameArchitect.Design.SpatialOS ###
 SpatialOS specific attributes.
 - SpatialType
 - SpatialComponent
 - SpatialField
 - SpatialEvent
 - SpatialCommand
+
+## GameArchitect.Support.* ##
+Multiple vendor specific "helpers".
+
+### GameArchitect.Support.JSON ###
+A contract resolver for JSON.NET.
+
+### GameArchitect.Support.EntityFramework ###
+Entity mapping for EF so you can deploy to a database.
+
+### GameArchitect.Support.Testing ###
+Assists in the automatic creation of unit tests. Emits JSON description of unit test conditions and expectations. These can then be read back in by a code generation task to create language specific unit tests.
