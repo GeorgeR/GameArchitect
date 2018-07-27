@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameArchitect.Core\GameArchitect.Core.csproj" />
+    <ProjectReference Include="..\GameArchitect.Tasks.CodeGeneration.Core\GameArchitect.Tasks.CodeGeneration.Core.csproj" />
+  </ItemGroup>
+
+</Project>
