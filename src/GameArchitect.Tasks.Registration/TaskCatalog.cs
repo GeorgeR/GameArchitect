@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition.Hosting;
 using System.Composition.Hosting;
-using System.Linq;
+using GameArchitect.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.Runtime
+namespace GameArchitect.Tasks.Registration
 {
     public sealed class TaskCatalog
     {
         private bool _isComposed = false;
 
         private ILogger<TaskCatalog> Log { get; }
-        private AssemblyCatalog AssemblyCatalog { get; set; }
-        
+
         private readonly IDictionary<string, ITask> _tasks = new Dictionary<string, ITask>();
         public ITask this[string taskName]
         {
@@ -43,14 +43,19 @@ namespace GameArchitect.Tasks.Runtime
             if(taskAssemblyPaths.Length <= 0)
                 throw new Exception("Task assembly paths was empty.");
 
-            AssemblyCatalog = new AssemblyCatalog(taskAssemblyPaths);
-
-            var configuration = new ContainerConfiguration()
-                .WithAssemblies(AssemblyCatalog);
-
-            using (var container = configuration.CreateContainer())
-                foreach(var export in container.GetExports<ITask>())
-                    _tasks.Add(string.IsNullOrEmpty(export.Name) ? export.Name.ToLower() : export.GetType().Name.ToLower(), export);
+            var catalog = new AggregateCatalog();
+            taskAssemblyPaths.ForEach(o =>
+            {
+                var directoryCatalog = new DirectoryCatalog(o);
+                catalog.Catalogs.Add(directoryCatalog);
+            });
+            
+            using (var container = new CompositionContainer(catalog))
+                foreach (var export in container.GetExports<ITask>())
+                {
+                    var e = export.Value;
+                    _tasks.Add(string.IsNullOrEmpty(e.Name) ? e.Name.ToLower() : e.GetType().Name.ToLower(), e);
+                }
 
             _isComposed = true;
         }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Extensions.Reflection;
 
@@ -12,24 +14,25 @@ namespace GameArchitect.Design
 {
     public class ExportCatalog : IEnumerable<TypeInfo>, IEnumerable<Type>, IValidatable
     {
-        private AssemblyCatalog AssemblyCatalog { get; }
+        private IEnumerable<Assembly> Assemblies { get; }
         private IList<TypeInfo> Types { get; set; }
 
         public ExportCatalog(string path)
         {
-            AssemblyCatalog = new AssemblyCatalog(path);
+            Assemblies = Directory.GetFiles(path, "*.dll")
+                .Select(o => AssemblyLoadContext.Default.LoadFromAssemblyPath(o));
         }
 
         public ExportCatalog(params Assembly[] assemblies)
         {
-            AssemblyCatalog = new AssemblyCatalog(assemblies);
+            Assemblies = assemblies;
         }
 
         private IEnumerable<TypeInfo> GetTypes()
         {
             if (Types == null)
             {
-                Types = AssemblyCatalog
+                Types = Assemblies
                     .SelectMany(o => o.GetExportedTypes().Where(t => t.HasAttribute<ExportAttribute>()))
                     .Select(o => new TypeInfo(o))
                     .ToList();

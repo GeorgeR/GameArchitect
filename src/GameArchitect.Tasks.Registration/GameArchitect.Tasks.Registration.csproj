@@ -34,7 +34,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GameArchitect.Tasks.CodeGeneration.Core\GameArchitect.Tasks.CodeGeneration.Core.csproj" />
+    <PackageReference Include="Microsoft.Composition" Version="1.0.31" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameArchitect.Core\GameArchitect.Core.csproj" />
+    <ProjectReference Include="..\GameArchitect.Tasks.Core\GameArchitect.Tasks.Core.csproj" />
   </ItemGroup>
 
 </Project>

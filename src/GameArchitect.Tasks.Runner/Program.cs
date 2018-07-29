@@ -1,5 +1,6 @@
 ﻿using System;
 using CommandLine;
+using GameArchitect.Tasks.Registration;
 using GameArchitect.Tasks.Runtime;
 using Microsoft.Extensions.DependencyInjection;
 

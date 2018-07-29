@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Runtime.Loader;
 using GameArchitect.Extensions;
 
-namespace GameArchitect
+namespace GameArchitect.Tasks.Registration
 {
     public class AssemblyCatalog : IEnumerable<Assembly>
     {

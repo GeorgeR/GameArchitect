@@ -3,9 +3,11 @@ using System.IO;
 using System.Threading.Tasks;
 using GameArchitect.Tasks.Runtime;
 using Newtonsoft.Json;
+using GameArchitect.Tasks.Registration;
 
 namespace GameArchitect.Tasks.Runner
 {
+    /* Responsible for resolving, creating and injecting options into a task. */
     internal class TaskBootstrap
     {
         private ITask Task { get; } = null;

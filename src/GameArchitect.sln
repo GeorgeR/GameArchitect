@@ -27,13 +27,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Support.JSON"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Support.EntityFramework", "GameArchitect.Support.EntityFramework\GameArchitect.Support.EntityFramework.csproj", "{0BCA89EA-6D5F-4D90-B9AD-59EC7898264E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameArchitect.Tasks.CodeGeneration.CXX", "GameArchitect.Tasks.CodeGeneration.CXX\GameArchitect.Tasks.CodeGeneration.CXX.csproj", "{707CF4C8-8FA1-4B6D-B2FE-A034B7DA3256}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Tasks.CodeGeneration.CXX", "GameArchitect.Tasks.CodeGeneration.CXX\GameArchitect.Tasks.CodeGeneration.CXX.csproj", "{707CF4C8-8FA1-4B6D-B2FE-A034B7DA3256}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameArchitect.Tasks.CodeGeneration.Unreal", "GameArchitect.Tasks.CodeGeneration.Unreal\GameArchitect.Tasks.CodeGeneration.Unreal.csproj", "{79BA27B9-6B1E-432B-A1F7-4A9D2FCBE6D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Tasks.CodeGeneration.Unreal", "GameArchitect.Tasks.CodeGeneration.Unreal\GameArchitect.Tasks.CodeGeneration.Unreal.csproj", "{79BA27B9-6B1E-432B-A1F7-4A9D2FCBE6D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameArchitect.Design.Unreal", "GameArchitect.Design.Unreal\GameArchitect.Design.Unreal.csproj", "{D3C17EAE-D2E6-45C2-B9C6-97B57EB9FE97}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Design.Unreal", "GameArchitect.Design.Unreal\GameArchitect.Design.Unreal.csproj", "{D3C17EAE-D2E6-45C2-B9C6-97B57EB9FE97}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameArchitect.Tasks.Runner", "GameArchitect.Tasks.Runner\GameArchitect.Tasks.Runner.csproj", "{DB144955-BEEB-4DDF-9E08-0FDB29533CBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Tasks.Runner", "GameArchitect.Tasks.Runner\GameArchitect.Tasks.Runner.csproj", "{DB144955-BEEB-4DDF-9E08-0FDB29533CBF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameArchitect.Tasks.Registration", "GameArchitect.Tasks.Registration\GameArchitect.Tasks.Registration.csproj", "{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +91,10 @@ Global
 		{DB144955-BEEB-4DDF-9E08-0FDB29533CBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB144955-BEEB-4DDF-9E08-0FDB29533CBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB144955-BEEB-4DDF-9E08-0FDB29533CBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{79BA27B9-6B1E-432B-A1F7-4A9D2FCBE6D8} = {9C4B2DAE-6C1F-40EC-903D-3A8554FD24A4}
 		{D3C17EAE-D2E6-45C2-B9C6-97B57EB9FE97} = {0DF2C70F-4B47-4255-ABF8-64D9EAF3CF39}
 		{DB144955-BEEB-4DDF-9E08-0FDB29533CBF} = {A9F46729-A15A-49D7-92AE-F4E93C9E1BA7}
+		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3} = {A9F46729-A15A-49D7-92AE-F4E93C9E1BA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01952566-DC0A-4D93-92C4-F5B3B4971106}
