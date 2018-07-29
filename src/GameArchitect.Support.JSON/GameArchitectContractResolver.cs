@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Attributes.Db;
 using GameArchitect.Design.Attributes.Net;

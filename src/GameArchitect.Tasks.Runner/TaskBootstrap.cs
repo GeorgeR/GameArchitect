@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using GameArchitect.Design;
 using GameArchitect.Tasks.Runtime;
@@ -17,7 +18,7 @@ namespace GameArchitect.Tasks.Runner
 
         public TaskBootstrap(TaskCatalog taskCatalog, ExportCatalog exports, string taskName, string taskOptionsFile)
         {
-            if (!taskCatalog.HasNamedTask(taskName))
+            if (!string.IsNullOrEmpty(taskName) && !taskCatalog.HasNamedTask(taskName))
                 throw new Exception($"No task found with name {taskName}.");
             
             if(!File.Exists(taskOptionsFile))
@@ -25,10 +26,16 @@ namespace GameArchitect.Tasks.Runner
 
             Exports = exports;
 
+            Task = taskCatalog.FirstOrDefault();
+            if(Task == null)
+                throw new NullReferenceException($"Default task not found. Do the referenced dll's have an [Export] attribute?");
+
             var optionsStr = File.ReadAllText(taskOptionsFile);
             var taskOptions = JsonConvert.DeserializeObject(optionsStr, Task.OptionsType) as ITaskOptions;
             if(taskOptions == null)
                 throw new Exception($"TaskOptions not parsed.");
+
+            Options = taskOptions;
         }
 
         public async Task<bool> Run(TaskRunner runner)

@@ -12,19 +12,27 @@ namespace GameArchitect.Tasks.Runtime
 
         public TaskRunner(IServiceCollection services = null)
         {
+            Console.WriteLine(services);
             Services = services ?? new ServiceCollection();
+            Services.AddSingleton(provider => Services);
             Services.AddScoped<ITaskParameters, TaskParameters>();
-            Services.AddLogging();
+            Services.AddScoped<TaskParameters>();
+            //Services.AddLogging();
 
             ServiceProvider = Services.BuildServiceProvider();
         }
 
         public async Task<bool> Run(ITask task, ExportCatalog exports, ITaskOptions options)
         {
+            if(options == null)
+                Console.WriteLine("Options provided to Task.Run was null.");
+
             Services.AddScoped(typeof(ITaskOptions), provider => options);
             ServiceProvider = Services.BuildServiceProvider();
 
-            var parameters = (ITaskParameters) ServiceProvider.GetService(task.ParameterType);
+            var taskParameterType = task.ParameterType ?? typeof(TaskParameters);
+            var parameters = (ITaskParameters) ServiceProvider.GetService(taskParameterType);
+
             return await task.Run(parameters);
         }
     }

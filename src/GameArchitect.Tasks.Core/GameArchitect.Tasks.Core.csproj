@@ -6,7 +6,7 @@
     <Authors>George Rolfe</Authors>
     <Company>Barking Chimp</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.21</Version>
+    <Version>1.2.28</Version>
     <AssemblyVersion>1.2.1.0</AssemblyVersion>
   </PropertyGroup>
 
@@ -35,9 +35,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Composition" Version="1.0.31" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.1" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -7,7 +7,7 @@ namespace GameArchitect.Tasks
 {
     public interface ITaskParameters
     {
-        ILogger Log { get; }
+        ILogger<ITaskParameters> Log { get; }
         IServiceCollection Services { get; }
         ExportCatalog Exports { get; } 
         ITaskOptions Options { get; }
@@ -16,14 +16,14 @@ namespace GameArchitect.Tasks
         TOptions GetOptionsAs<TOptions>() where TOptions : ITaskOptions;
     }
 
-    public class TaskParameters : ITaskParameters
+    public class TaskParameters : ITaskParameters, IValidatable
     {
-        public ILogger Log { get; }
+        public ILogger<ITaskParameters> Log { get; }
         public IServiceCollection Services { get; }
         public ExportCatalog Exports { get; }
         public ITaskOptions Options { get; }
         
-        public TaskParameters(ILogger logger, IServiceCollection services, ExportCatalog exports, ITaskOptions options)
+        public TaskParameters(ILogger<ITaskParameters> logger, IServiceCollection services, ExportCatalog exports, ITaskOptions options)
         {
             Log = logger;
             Services = services;
@@ -39,6 +39,23 @@ namespace GameArchitect.Tasks
         public TOptions GetOptionsAs<TOptions>() where TOptions : ITaskOptions
         {
             return (TOptions)Options;
+        }
+
+        public bool IsValid(ILogger<IValidatable> logger)
+        {
+            if(Log == null)
+                logger.LogError("Log is null.");
+
+            if(Services == null)
+                logger.LogError("Services is null");
+
+            if(Exports == null)
+                logger.LogError("Exports is null");
+
+            if(Options == null)
+                logger.LogError("Options is null");
+
+            return true;
         }
     }
 }
