@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes
 {
@@ -8,12 +9,12 @@ namespace GameArchitect.Design.Attributes
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter)]
     public sealed class OptionalAttribute : ValidatableAttribute
     {
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             if (info.HasAttribute<RequiredAttribute>())
-                throw new Exception($"Property {info.GetPath()} was marked as Optional but also has an Required attribute.");
+                logger.LogError($"Property {info.GetPath()} was marked as Optional but also has an Required attribute.");
 
             return true;
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GameArchitect.Extensions.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
@@ -74,7 +75,7 @@ namespace GameArchitect.Design.Metadata
 
         public abstract string GetPath();
 
-        public virtual bool IsValid()
+        public virtual bool IsValid(ILogger<IValidatable> logger)
         {
             if(AttributeProvider == null)
                 throw new Exception($"AttributeProvider is null for {GetPath()}.");
@@ -82,7 +83,7 @@ namespace GameArchitect.Design.Metadata
             return GetAttributes()
                 .Where(o => o.GetType().ImplementsInterface<IDelegatedValidatable>())
                 .Cast<IDelegatedValidatable>()
-                .All(o => o.IsValid(this));
+                .All(o => o.IsValid(logger, this));
         }
     }
 }

@@ -5,15 +5,23 @@ using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 {
     public class FunctionPrinter : IPrinter<FunctionInfo>
     {
+        protected ILoggerFactory LoggerFactory { get; }
+        
         protected virtual INameTransformer NameTransformer { get; } = new CXXNameTransformer();
         protected virtual ITypeTransformer TypeTransformer { get; } = new CXXTypeTransformer();
 
         protected virtual IPrinter<IMemberInfo> ParameterPrinter { get; } = new ParameterPrinter();
+
+        public FunctionPrinter(ILoggerFactory loggerFactory)
+        {
+            LoggerFactory = loggerFactory;
+        }
 
         protected virtual string PrintParameters(FunctionInfo info, CXXFileType fileType)
         {
@@ -22,7 +30,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             info.GetParameters().ForEach(p =>
             {
                 var deconstructed = new List<IMemberInfo>();
-                if (DeconstructAttribute.TryDeconstruct(p, ref deconstructed))
+                if (DeconstructAttribute.TryDeconstruct(LoggerFactory.CreateLogger<IValidatable>(), p, ref deconstructed))
                     deconstructed.ForEach(o => { sb.Append(ParameterPrinter.Print(o, fileType) + ", "); });
                 else
                     sb.Append(ParameterPrinter.Print(p, fileType) + ", ");

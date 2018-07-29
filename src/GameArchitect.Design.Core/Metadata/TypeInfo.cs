@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using GameArchitect.Extensions;
+using GameArchitect.Extensions.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
@@ -98,6 +101,16 @@ namespace GameArchitect.Design.Metadata
         public T Create<T>()
         {
             return (T)Activator.CreateInstance(Native);
+        }
+
+        public override bool IsValid(ILogger<IValidatable> logger)
+        {
+            var result = base.IsValid(logger);
+
+            return result
+                   && GetProperties().All(p => p.IsValid(logger))
+                   && GetEvents().All(e => e.IsValid(logger))
+                   && GetFunctions().All(f => f.IsValid(logger));
         }
     }
 }

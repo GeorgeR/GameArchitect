@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameArchitect.Design.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes
 {
@@ -18,19 +19,25 @@ namespace GameArchitect.Design.Attributes
             Properties = properties.ToList();
         }
 
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             ForMeta<IMemberInfo>(info, o =>
             {
+                if(o.Type == typeof(void))
+                    logger.LogError($"A deconstruct attribute was specified for {o.GetPath()} with a void return type.");
+
                 var type = o.Type;
                 if (Properties == null || Properties.Count == 0)
                 {
                     if (type.ImplementsInterface<IDeconstructible>())
                         Properties = type.Create<IDeconstructible>().Deconstruct().ToList();
                     else
-                        throw new Exception($"A Deconstruct attribute is specified for {o.GetPath()} but no Properties were provided, and the type {type.GetPath()} does not implement IDeconstructible.");
+                    {
+                        logger.LogError($"A Deconstruct attribute is specified for {o.GetPath()} but no Properties were provided, and the type {type.GetPath()} does not implement IDeconstructible.");
+                        return;
+                    }
                 }
 
                 var typeProperties = type.GetProperties()
@@ -38,13 +45,13 @@ namespace GameArchitect.Design.Attributes
                     .ToList();
 
                 if (!Properties.All(p => typeProperties.Contains(p)))
-                    throw new Exception($"One or more properties specified for a deconstructible were not found on the actual type. Note that the names are case sensitive.");
+                    logger.LogError($"One or more properties specified for a deconstructible (on {o.GetPath()}) were not found on the actual type ({o.Type.GetPath()}). Note that the names are case sensitive.");
             });
 
             return true;
         }
 
-        private static void DeconstructPath(TypeInfo type, string path, ref List<IMemberInfo> result)
+        private static void DeconstructPath(ILogger<IValidatable> logger, TypeInfo type, string path, ref List<IMemberInfo> result)
         {
             if (path.Length == 0)
                 return;
@@ -54,7 +61,7 @@ namespace GameArchitect.Design.Attributes
 
             var actualProperty = actualProperties.FirstOrDefault(o => o.Name == propertyName);
             if (actualProperty == null)
-                throw new NullReferenceException($"Tried to deconstruct with invalid property name ({propertyName}) on type {type.GetPath()}.");
+                logger.LogError($"Tried to deconstruct with invalid property name ({propertyName}) on type {type.GetPath()}.");
 
             // TODO
             //result.Add(new MemberInfo(actualProperty.Type, propertyName));
@@ -63,10 +70,10 @@ namespace GameArchitect.Design.Attributes
                 return;
 
             path = path.Substring(path.IndexOf('.') + 1);
-            DeconstructPath(actualProperty.Type, path, ref result);
+            DeconstructPath(logger, actualProperty.Type, path, ref result);
         }
 
-        private static void Deconstruct(TypeInfo type, string name, List<string> deconstructionProperties, ref List<IMemberInfo> result)
+        private static void Deconstruct(ILogger<IValidatable> logger, TypeInfo type, string name, List<string> deconstructionProperties, ref List<IMemberInfo> result)
         {
             var propertyPaths = deconstructionProperties;
             if (propertyPaths == null || propertyPaths.Count == 0)
@@ -80,14 +87,14 @@ namespace GameArchitect.Design.Attributes
             foreach (var propertyPath in propertyPaths)
             {
                 var deconstructedPath = new List<IMemberInfo>();
-                DeconstructPath(type, propertyPath, ref deconstructedPath);
+                DeconstructPath(logger, type, propertyPath, ref deconstructedPath);
 
                 // TODO
                 //result.Add(new MemberInfo(deconstructedPath.Last().Type, $"{name}{deconstructedPath.Aggregate(string.Empty, (previous, current) => previous + current.Name)}"));
             }
         }
 
-        public static bool TryDeconstruct(IMetaInfo info, ref List<IMemberInfo> values)
+        public static bool TryDeconstruct(ILogger<IValidatable> logger, IMetaInfo info, ref List<IMemberInfo> values)
         {
             if (!info.HasAttribute<DeconstructAttribute>())
                 return false;
@@ -96,7 +103,7 @@ namespace GameArchitect.Design.Attributes
                 return false;
 
             var deconstruct = info.GetAttribute<DeconstructAttribute>();
-            Deconstruct(memberInfo.Type, info.Name, deconstruct.Properties, ref values);
+            Deconstruct(logger, memberInfo.Type, info.Name, deconstruct.Properties, ref values);
 
             return true;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes
 {
@@ -53,9 +54,9 @@ namespace GameArchitect.Design.Attributes
             return !string.IsNullOrEmpty(value);
         }
 
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             // TODO: Validate tag string format - check for illegal characters
 

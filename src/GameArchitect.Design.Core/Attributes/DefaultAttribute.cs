@@ -1,5 +1,6 @@
 ﻿using System;
 using GameArchitect.Design.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes
 {
@@ -26,14 +27,14 @@ namespace GameArchitect.Design.Attributes
             return (T)Value;
         }
 
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             ForMeta<PropertyInfo>(info, o =>
             {
                 if (o.Type.Native != Value.GetType())
-                    throw new Exception($"A Default attribute is specified for property {o.GetPath()} which uses an incompatible type. Ensure the attribute value and property type match.");
+                    logger.LogError($"A Default attribute (of type {Value.GetType()}) is specified for property {o.GetPath()} which uses an incompatible type ({o.Type.GetPath()}). Ensure the attribute value and property type match.");
             });
 
             return true;

@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using GameArchitect.Design.Attributes;
+using GameArchitect.Extensions;
 using GameArchitect.Extensions.Reflection;
-
+using Microsoft.Extensions.Logging;
 using TypeInfo = GameArchitect.Design.Metadata.TypeInfo;
 
 namespace GameArchitect.Design
@@ -17,10 +17,21 @@ namespace GameArchitect.Design
         private IEnumerable<Assembly> Assemblies { get; }
         private IList<TypeInfo> Types { get; set; }
 
-        public ExportCatalog(string path)
+        public ExportCatalog(params string[] paths)
         {
-            Assemblies = Directory.GetFiles(path, "*.dll")
-                .Select(o => AssemblyLoadContext.Default.LoadFromAssemblyPath(o));
+            var a = new List<Assembly>();
+
+            paths.ForEach(p =>
+            {
+                if(File.Exists(p))
+                    a.Add(Assembly.LoadFile(p));
+                else if (Directory.Exists(p))
+                    a.AddRange(Directory.GetFiles(p, "*.dll").Select(Assembly.LoadFile));
+                else
+                    throw new FileNotFoundException($"File or folder not found: {p}");
+            });
+
+            Assemblies = a;
         }
 
         public ExportCatalog(params Assembly[] assemblies)
@@ -56,9 +67,9 @@ namespace GameArchitect.Design
             return GetEnumerator();
         }
 
-        public bool IsValid()
+        public bool IsValid(ILogger<IValidatable> logger)
         {
-            return GetTypes().All(o => o.IsValid());
+            return GetTypes().All(o => o.IsValid(logger));
         }
     }
 }

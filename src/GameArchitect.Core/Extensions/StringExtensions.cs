@@ -17,7 +17,7 @@ namespace GameArchitect.Extensions
         public static string Indent(this string str, int tabCount)
         {
             var tabs = Enumerable.Repeat('\t', tabCount);
-            var split = str.Split(Environment.NewLine);
+            var split = str.Split(new []{Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
             var result = string.Empty;
             foreach (var segment in split)
                 result += $"{tabs}{segment}{Environment.NewLine}";

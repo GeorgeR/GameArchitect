@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using GameArchitect.Design.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes
 {
@@ -10,15 +11,15 @@ namespace GameArchitect.Design.Attributes
         protected virtual Permission Permission { get; }
         protected abstract string Key { get; } // Case insensitive
 
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             ForMeta<PropertyInfo>(info, o =>
             {
                 var permissionAttributes = o.GetAttributes().OfType<PermissionAttributeBase>();
                 if(permissionAttributes.Count() > 1)
-                    throw new Exception($"More than one Permission attribute is specified with key {Key} for property {o.GetPath()}.");
+                    logger.LogError($"More than one Permission attribute is specified with key {Key} for property {o.GetPath()}.");
             });
 
             return true;

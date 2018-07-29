@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
     <Authors>George Rolfe</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Company>Barking Chimp</Company>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.1.1.0</AssemblyVersion>
+    <Version>1.2.20</Version>
+    <AssemblyVersion>1.2.1.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

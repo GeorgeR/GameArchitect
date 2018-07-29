@@ -2,6 +2,7 @@
 using System.Linq;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design
 {
@@ -51,9 +52,9 @@ namespace GameArchitect.Design
             return isSame;
         }
 
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             ForMeta<PropertyInfo>(info, propertyInfo =>
             {

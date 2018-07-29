@@ -1,7 +1,9 @@
-﻿namespace GameArchitect
+﻿using Microsoft.Extensions.Logging;
+
+namespace GameArchitect
 {
     public interface IValidatable
     {
-        bool IsValid();
+        bool IsValid(ILogger<IValidatable> logger);
     }
 }

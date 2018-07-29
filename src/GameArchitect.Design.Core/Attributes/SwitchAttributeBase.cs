@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes
 {
@@ -22,9 +23,9 @@ namespace GameArchitect.Design.Attributes
         protected virtual string Key { get; } = string.Empty; // Case insensitive
 
         // TODO: Validate
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             // TODO
 

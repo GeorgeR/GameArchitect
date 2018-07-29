@@ -7,15 +7,23 @@ using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.CXX;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 {
     internal class EventPrinter : CXX.Templates.EventPrinter
     {
+        private ILoggerFactory LoggerFactory { get; }
+
         protected override INameTransformer NameTransformer { get; } = new UnrealNameTransformer();
         protected override ITypeTransformer TypeTransformer { get; } = new UnrealTypeTransformer();
 
         protected override CXX.Templates.IPrinter<IMemberInfo> ParameterPrinter { get; } = new ParameterPrinter();
+
+        public EventPrinter(ILoggerFactory loggerFactory)
+        {
+            LoggerFactory = loggerFactory;
+        }
 
         protected virtual string PrintParameters(EventInfo info, CXXFileType fileType, out int parameterCount)
         {
@@ -25,7 +33,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             info.GetParameters().ForEach(p =>
             {
                 var deconstructed = new List<IMemberInfo>();
-                if (DeconstructAttribute.TryDeconstruct(p, ref deconstructed))
+                if (DeconstructAttribute.TryDeconstruct(LoggerFactory.CreateLogger<IValidatable>(), p, ref deconstructed))
                     deconstructed.ForEach(o =>
                     {
                         sb.Append(ParameterPrinter.Print(o, fileType) + ", ");

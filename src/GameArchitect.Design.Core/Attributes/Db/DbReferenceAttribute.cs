@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using GameArchitect.Design.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes.Db
 {
@@ -26,18 +27,18 @@ namespace GameArchitect.Design.Attributes.Db
 
         public PropertyInfo GetReferencedKey(PropertyInfo property)
         {
-            IsValid(property);
+            //IsValid(property);
             return property.Type.GetProperties().FirstOrDefault(p => p.HasAttribute<DbKeyAttribute>()); 
         }
 
-        public bool IsValid<TMeta>(TMeta info) where TMeta : IMetaInfo
+        public bool IsValid<TMeta>(ILogger<IValidatable> logger,TMeta info) where TMeta : IMetaInfo
         {
             // NOTE: This currently assumes a singular (non composite) key
             if (info is PropertyInfo)
             {
                 var propertyInfo = info as PropertyInfo;
                 if (!propertyInfo.Type.GetProperties().Any(p => p.HasAttribute<DbKeyAttribute>()))
-                    throw new Exception($"A DbReference attribute was specified for type {propertyInfo.Type.GetPath()}, however this type doesn't have and DbKey attribute so it doesn't know how to reference it!");
+                    logger.LogError($"A DbReference attribute was specified for type {propertyInfo.Type.GetPath()}, however this type doesn't have and DbKey attribute so it doesn't know how to reference it!");
             }
 
             return true;

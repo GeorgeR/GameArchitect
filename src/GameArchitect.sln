@@ -35,7 +35,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Design.Unreal
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Tasks.Runner", "GameArchitect.Tasks.Runner\GameArchitect.Tasks.Runner.csproj", "{DB144955-BEEB-4DDF-9E08-0FDB29533CBF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameArchitect.Tasks.Registration", "GameArchitect.Tasks.Registration\GameArchitect.Tasks.Registration.csproj", "{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Tasks.Registration", "GameArchitect.Tasks.Registration\GameArchitect.Tasks.Registration.csproj", "{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

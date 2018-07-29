@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GameArchitect.Design;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameArchitect.Tasks.Runtime
@@ -18,7 +19,7 @@ namespace GameArchitect.Tasks.Runtime
             ServiceProvider = Services.BuildServiceProvider();
         }
 
-        public async Task<bool> Run(ITask task, ITaskOptions options)
+        public async Task<bool> Run(ITask task, ExportCatalog exports, ITaskOptions options)
         {
             Services.AddScoped(typeof(ITaskOptions), provider => options);
             ServiceProvider = Services.BuildServiceProvider();

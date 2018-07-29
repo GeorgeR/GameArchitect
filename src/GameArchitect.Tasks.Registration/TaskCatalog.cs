@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition.Hosting;
-using System.Composition.Hosting;
 using GameArchitect.Extensions;
 using Microsoft.Extensions.Logging;
 

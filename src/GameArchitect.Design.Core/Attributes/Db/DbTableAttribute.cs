@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using GameArchitect.Design.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes.Db
 {
@@ -14,14 +15,14 @@ namespace GameArchitect.Design.Attributes.Db
             Name = name;
         }
 
-        public override bool IsValid<TMeta>(TMeta info)
+        public override bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info)
         {
-            base.IsValid(info);
+            base.IsValid(logger, info);
 
             ForMeta<TypeInfo>(info, o =>
             {
                 if (!o.GetProperties().Any(p => p.HasAttribute<DbKeyAttribute>()))
-                    throw new Exception($"The type {o.GetPath()} has a DbTable attribute but no DbKey was specified.");
+                    logger.LogError($"The type {o.GetPath()} has a DbTable attribute but no DbKey was specified.");
             });
 
             return true;

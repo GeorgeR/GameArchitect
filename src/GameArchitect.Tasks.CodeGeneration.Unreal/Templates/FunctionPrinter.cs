@@ -4,6 +4,7 @@ using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Tasks.CodeGeneration.CXX;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 {
@@ -13,6 +14,8 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
         protected override ITypeTransformer TypeTransformer { get; } = new UnrealTypeTransformer();
 
         protected override CXX.Templates.IPrinter<IMemberInfo> ParameterPrinter { get; } = new ParameterPrinter();
+
+        public FunctionPrinter(ILoggerFactory loggerFactory) : base(loggerFactory) { }
 
         public override string Print(FunctionInfo info, CXXFileType fileType)
         {

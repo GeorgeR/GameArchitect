@@ -1,12 +1,13 @@
 ﻿using System;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Extensions.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Attributes
 {
     public abstract class ValidatableAttribute : Attribute, IDelegatedValidatable
     {
-        public virtual bool IsValid<TMeta>(TMeta info) where TMeta : IMetaInfo
+        public virtual bool IsValid<TMeta>(ILogger<IValidatable> logger, TMeta info) where TMeta : IMetaInfo
         {
             var usage = GetType().GetAttribute<AttributeUsageAttribute>();
             var validOn = usage.ValidOn;
