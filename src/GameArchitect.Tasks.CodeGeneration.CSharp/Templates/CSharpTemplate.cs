@@ -5,7 +5,7 @@ using GameArchitect.Tasks.CodeGeneration.Extensions;
 
 namespace GameArchitect.Tasks.CodeGeneration.CSharp.Templates
 {
-    public abstract class CSharpTemplate : IPrinter
+    public abstract class CSharpTemplate : ITemplate
     {
         public HashSet<string> Usings { get; } = new HashSet<string>();
         public string Namespace { get; private set; }

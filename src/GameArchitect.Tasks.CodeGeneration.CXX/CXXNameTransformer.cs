@@ -1,4 +1,4 @@
-﻿using System;
+﻿using GameArchitect.Design;
 using GameArchitect.Design.Metadata;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX

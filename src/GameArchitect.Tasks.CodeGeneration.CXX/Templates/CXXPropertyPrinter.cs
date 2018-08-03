@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Text;
+using GameArchitect.Design;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 {
-    public class PropertyPrinter : IPrinter<PropertyInfo>
+    public class CXXPropertyPrinter : PrinterBase, ICXXPrinter<PropertyInfo>
     {
-        protected virtual INameTransformer NameTransformer { get; } = new CXXNameTransformer();
-        protected virtual ITypeTransformer TypeTransformer { get; } = new CXXTypeTransformer();
+        public CXXPropertyPrinter(
+            ILogger<ITemplate> log, 
+            INameTransformer nameTransformer,
+            ITypeTransformer typeTransformer)
+            : base(log, nameTransformer, typeTransformer) { }
 
         public virtual string Print(PropertyInfo info, CXXFileType fileType)
         {
@@ -19,9 +24,6 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             return sb.ToString();
         }
 
-        public string Print(PropertyInfo info)
-        {
-            throw new NotImplementedException($"Using the CXXFileType overload.");
-        }
+        public string Print(PropertyInfo info) { throw new NotImplementedException($"Using the CXXFileType overload."); }
     }
 }

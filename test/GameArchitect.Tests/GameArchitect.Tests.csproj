@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\GameArchitect.Tasks.Runner\GameArchitect.Tasks.Runner.csproj" />
+    <ProjectReference Include="..\SomeGame.Design.Data\SomeGame.Design.Data.csproj" />
+    <ProjectReference Include="..\SomeGame.Tasks.CodeGeneration.Unreal\SomeGame.Tasks.CodeGeneration.Unreal.csproj" />
+    <ProjectReference Include="..\SomeGame.Tasks.Empty\SomeGame.Tasks.Empty.csproj" />
+    <ProjectReference Include="..\SomeGame.Tasks.EntityFramework\SomeGame.Tasks.EntityFramework.csproj" />
+  </ItemGroup>
+
+</Project>

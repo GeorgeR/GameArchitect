@@ -1,17 +1,24 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Support;
+using GameArchitect.Extensions;
 using GameArchitect.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
-    public sealed class FunctionInfo : MemberInfoBase<System.Reflection.MethodInfo>
+    public interface IFunctionInfo : IMemberInfo<System.Reflection.MethodInfo>
+    {
+        IList<IParameterInfo> Parameters { get; }
+    }
+
+    public class FunctionInfo : MemberInfoBase<System.Reflection.MethodInfo>, IFunctionInfo
     {
         public override string TypeName => "Function";
 
-        public FunctionInfo(TypeInfo declaringType, MethodInfo native)
+        public FunctionInfo(ITypeInfo declaringType, System.Reflection.MethodInfo native)
             : base(declaringType, native)
         {
             Name = native.Name;
@@ -21,18 +28,22 @@ namespace GameArchitect.Design.Metadata
             Permission = Permission.ReadWrite;
         }
 
-        private IQueryable<ParameterInfo> _parameters;
-        public IQueryable<ParameterInfo> GetParameters()
+        private IList<IParameterInfo> _parameters;
+        public IList<IParameterInfo> Parameters
         {
-            if (_parameters != null)
-                return _parameters;
+            get
+            {
+                if (_parameters != null)
+                    return _parameters;
 
-            _parameters = Native
-                .GetParameters()
-                .Select(o => new ParameterInfo(this, DeclaringType, o))
-                .AsQueryable();
-            
-            return GetParameters();
+                _parameters = new List<IParameterInfo>();
+                _parameters.AddRange(
+                    Native
+                        .GetParameters()
+                        .Select(o => new ParameterInfo(this, DeclaringType, o)));
+
+                return _parameters;
+            }
         }
 
         public override string GetPath()

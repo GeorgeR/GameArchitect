@@ -7,5 +7,6 @@ namespace GameArchitect.Design.Unreal.Attributes
     {
         public virtual string BaseClassName { get; } = string.Empty;
         public bool AsBaseClass { get; } = false;
+        public bool ForBlueprint { get; } = true;
     }
 }

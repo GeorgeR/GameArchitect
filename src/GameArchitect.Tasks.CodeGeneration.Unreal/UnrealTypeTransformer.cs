@@ -8,6 +8,9 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
 {
     public class UnrealTypeTransformer : CXXTypeTransformer
     {
+        public UnrealTypeTransformer(INameTransformer nameTransformer) 
+            : base(nameTransformer) { }
+
         public override string TransformType(IMemberInfo member)
         {
             var result = TransformType(member.Type);
@@ -45,20 +48,26 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
 
             if (type == typeof(string))
                 result = "FString";
-            else if (type == typeof(Vector3<float>))
+            else if (type == typeof(Vector3<float>) || type == typeof(Vector3<double>))
                 result = "FVector";
-            else if (type == typeof(Vector2<float>))
+            else if (type == typeof(Vector2<float>) || type == typeof(Vector2<double>))
                 result = "FVector2D";
-            else if (type == typeof(Vector3<float>))
+            else if (type == typeof(Vector4<float>) || type == typeof(Vector4<double>))
                 result = "FVector4";
-            else if (type == typeof(Quaternion<float>))
+            else if (type == typeof(Quaternion<float>) || type == typeof(Quaternion<double>))
                 result = "FQuat";
-            else if (type == typeof(Rotation<float>))
+            else if (type == typeof(Rotation<float>) || type == typeof(Rotation<double>))
                 result = "FRotator";
-            else if (type == typeof(Box<float>))
+            else if (type == typeof(Box<float>) || type == typeof(Box<double>))
                 result = "FBox";
-            else if (type == typeof(Rect<float>))
+            else if (type == typeof(Rect<float>) || type == typeof(Rect<double>))
                 result = "FBox2D";
+            else
+                result = NameTransformer.TransformName(type, type.Name, NameContext.Type);
+            result = result.Trim();
+
+            if(string.IsNullOrEmpty(result))
+                throw new NotSupportedException($"Type {type.GetPath()} not resolved in {nameof(UnrealTypeTransformer)}.");
 
             return result;
         }

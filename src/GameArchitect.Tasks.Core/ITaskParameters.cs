@@ -8,35 +8,45 @@ namespace GameArchitect.Tasks
     public interface ITaskParameters
     {
         ILogger<ITaskParameters> Log { get; }
-        IServiceCollection Services { get; }
         ExportCatalog Exports { get; } 
         ITaskOptions Options { get; }
-        
-        IServiceProvider GetServiceProvider();
-        TOptions GetOptionsAs<TOptions>() where TOptions : ITaskOptions;
+
+        void Inject(IServiceCollection services);
+        T GetService<T>();
+        TOptions GetOptions<TOptions>() where TOptions : ITaskOptions;
     }
 
     public class TaskParameters : ITaskParameters, IValidatable
     {
         public ILogger<ITaskParameters> Log { get; }
-        public IServiceCollection Services { get; }
+
+        private IServiceProvider ServiceProvider { get; }
+        
         public ExportCatalog Exports { get; }
         public ITaskOptions Options { get; }
         
-        public TaskParameters(ILogger<ITaskParameters> logger, IServiceCollection services, ExportCatalog exports, ITaskOptions options)
+        public TaskParameters(
+            ILogger<ITaskParameters> logger, 
+            IServiceCollection services,
+            ExportCatalog exports, 
+            ITaskOptions options)
         {
             Log = logger;
-            Services = services;
+
+            ServiceProvider = services.BuildServiceProvider();
+
             Exports = exports;
             Options = options;
         }
 
-        public IServiceProvider GetServiceProvider()
+        public virtual void Inject(IServiceCollection services) { }
+
+        public T GetService<T>()
         {
-            return Services.BuildServiceProvider();
+            return ServiceProvider.GetService<T>();
         }
 
-        public TOptions GetOptionsAs<TOptions>() where TOptions : ITaskOptions
+        public TOptions GetOptions<TOptions>() where TOptions : ITaskOptions
         {
             return (TOptions)Options;
         }
@@ -46,8 +56,8 @@ namespace GameArchitect.Tasks
             if(Log == null)
                 logger.LogError("Log is null.");
 
-            if(Services == null)
-                logger.LogError("Services is null");
+            if(ServiceProvider == null)
+                logger.LogError("ServiceProvider is null");
 
             if(Exports == null)
                 logger.LogError("Exports is null");

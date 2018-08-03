@@ -1,6 +1,6 @@
 ﻿using GameArchitect.Design.Metadata;
 
-namespace GameArchitect.Tasks.CodeGeneration
+namespace GameArchitect.Design
 {
     public enum NameContext
     {

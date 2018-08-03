@@ -4,16 +4,21 @@ using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
-    public sealed class ParameterInfo : MemberInfoBase<System.Reflection.ParameterInfo>
+    public interface IParameterInfo : IMemberInfo<System.Reflection.ParameterInfo>
+    {
+        IMemberInfo DeclaringMember { get; }
+    }
+
+    public class ParameterInfo : MemberInfoBase<System.Reflection.ParameterInfo>, IParameterInfo
     {
         public override string TypeName { get; } = "Parameter";
 
-        public FunctionInfo DeclaringFunction { get; }
+        public IMemberInfo DeclaringMember { get; }
 
-        public ParameterInfo(FunctionInfo declaringFunction, TypeInfo declaringType, System.Reflection.ParameterInfo native) 
+        public ParameterInfo(IMemberInfo declaringMember, ITypeInfo declaringType, System.Reflection.ParameterInfo native) 
             : base(declaringType, native)
         {
-            DeclaringFunction = declaringFunction;
+            DeclaringMember = declaringMember;
 
             Name = Native.Name;
             Type = ResolveType(Native.ParameterType, Native);
@@ -21,7 +26,7 @@ namespace GameArchitect.Design.Metadata
 
         public override string GetPath()
         {
-            return $"{DeclaringFunction.GetPath()}.{Name} : {Type.GetPath()}";
+            return $"{DeclaringMember.GetPath()}.{Name} : {Type.GetPath()}";
         }
 
         public override bool IsValid(ILogger<IValidatable> logger)

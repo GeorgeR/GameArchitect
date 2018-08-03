@@ -6,6 +6,13 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX
 {
     public class CXXTypeTransformer : ITypeTransformer
     {
+        protected INameTransformer NameTransformer { get; }
+
+        public CXXTypeTransformer(INameTransformer nameTransformer)
+        {
+            NameTransformer = nameTransformer;
+        }
+
         public virtual string TransformType(IMemberInfo member)
         {
             var result = TransformType(member.Type);
@@ -66,6 +73,8 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX
                 result = "float";
             else if (type == typeof(double))
                 result = "double";
+            else
+                result = NameTransformer.TransformName(type, type.Name, NameContext.Type);
 
             return result;
         }

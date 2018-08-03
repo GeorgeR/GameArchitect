@@ -2,7 +2,7 @@
 
 namespace GameArchitect.Design.Primitives
 {
-    public class Rotation<T>
+    public class Rotation<T> : IDeconstructible
     {
         public T Pitch { get; set; }
         public T Yaw { get; set; }

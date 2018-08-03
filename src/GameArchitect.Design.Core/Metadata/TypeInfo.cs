@@ -1,13 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GameArchitect.Extensions;
-using GameArchitect.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
-    public sealed class TypeInfo : MetaInfoBase, IMetaInfo<Type>
+    public interface ITypeInfo : IMetaInfo<Type>
+    {
+        TypeType TypeType { get; }
+
+        IList<ITypeInfo> BaseTypes { get; }
+        IList<IPropertyInfo> Properties { get; }
+        IList<IEventInfo> Events { get; }
+        IList<IFunctionInfo> Functions { get; }
+
+        bool ImplementsInterface<TInterface>();
+        bool Inherits<T>();
+
+        T Create<T>();
+    }
+
+    public class TypeInfo : MetaInfoBase, ITypeInfo
     {
         public System.Type Native { get; }
         protected override ICustomAttributeProvider AttributeProvider => Native;
@@ -25,57 +40,91 @@ namespace GameArchitect.Design.Metadata
             TypeType = Native.IsValueType ? TypeType.Value : TypeType.Reference;
         }
 
-        private IQueryable<PropertyInfo> _properties;
-        public IQueryable<PropertyInfo> GetProperties()
+        private IList<ITypeInfo> _baseTypes;
+        public IList<ITypeInfo> BaseTypes
         {
-            if (_properties != null)
+            get
+            {
+                if (_baseTypes != null)
+                    return _baseTypes;
+
+                _baseTypes = new List<ITypeInfo>();
+                if (Native.BaseType != null)
+                    _baseTypes.Add(new TypeInfo(Native.BaseType));
+
+                var interfaces = Native.GetInterfaces();
+                if (interfaces.Length > 0)
+                {
+                    foreach (var iface in interfaces)
+                        _baseTypes.Add(new TypeInfo(iface));
+                }
+
+                return _baseTypes;
+            }
+        }
+        
+        private IList<IPropertyInfo> _properties;
+        public IList<IPropertyInfo> Properties
+        {
+            get
+            {
+                if (_properties != null)
+                    return _properties;
+                
+                _properties = new List<IPropertyInfo>();
+                _properties.AddRange(
+                    Native
+                        .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                        .Select(o => new PropertyInfo(this, o)));
+
+                // Fields not supported for now
+                //result = result.Join(
+                //    Native
+                //        .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                //        .Select(o => new PropertyInfo(this, o)));
+
                 return _properties;
-
-            var result = Native
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Select(o => new PropertyInfo(this, o));
-
-            // Fields not supported for now
-            //result = result.Join(
-            //    Native
-            //        .GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-            //        .Select(o => new PropertyInfo(this, o)));
-
-            _properties = result.AsQueryable();
-
-            return GetProperties();
+            }
         }
 
-        private IQueryable<EventInfo> _events;
-        public IQueryable<EventInfo> GetEvents()
+        private IList<IEventInfo> _events;
+        public IList<IEventInfo> Events
         {
-            if (_events != null)
+            get
+            {
+                if (_events != null)
+                    return _events;
+
+                _events = new List<IEventInfo>();
+                _events.AddRange(
+                    Native
+                        .GetEvents(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                        .Select(o => new EventInfo(this, o)));
+
                 return _events;
-
-            _events = Native
-                .GetEvents(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Select(o => new EventInfo(this, o))
-                .AsQueryable();
-
-            return GetEvents();
+            }
         }
 
-        private IQueryable<FunctionInfo> _functions;
-        public IQueryable<FunctionInfo> GetFunctions()
+        private IList<IFunctionInfo> _functions;
+        public IList<IFunctionInfo> Functions
         {
-            if (_functions != null)
+            get
+            {
+                if (_functions != null)
+                    return _functions;
+
+                var baseFunctions = new[] { "ToString", "Equals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" };
+
+                _functions = new List<IFunctionInfo>();
+                _functions.AddRange(
+                    Native
+                        .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                        .Where(o => !o.IsSpecialName) // Excludes property accessors
+                        .Where(o => !baseFunctions.Contains(o.Name)) // Exclude base methods
+                        .Select(o => new FunctionInfo(this, o)));
+
                 return _functions;
-
-            var baseFunctions = new[] { "ToString", "Equals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" };
-
-            _functions = Native
-                .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                .Where(o => !o.IsSpecialName) // Excludes property accessors
-                .Where(o => !baseFunctions.Contains(o.Name)) // Exclude base methods
-                .Select(o => new FunctionInfo(this, o))
-                .AsQueryable();
-
-            return GetFunctions();
+            }
         }
         
         public bool ImplementsInterface<TInterface>()
@@ -108,9 +157,10 @@ namespace GameArchitect.Design.Metadata
             var result = base.IsValid(logger);
 
             return result
-                   && GetProperties().All(p => p.IsValid(logger))
-                   && GetEvents().All(e => e.IsValid(logger))
-                   && GetFunctions().All(f => f.IsValid(logger));
+                   && BaseTypes.All(t => t.IsValid(logger))
+                   && Properties.All(p => p.IsValid(logger))
+                   && Events.All(e => e.IsValid(logger))
+                   && Functions.All(f => f.IsValid(logger));
         }
     }
 }

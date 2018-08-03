@@ -61,10 +61,14 @@ namespace GameArchitect.Design.Attributes
 
             var actualProperty = actualProperties.FirstOrDefault(o => o.Name == propertyName);
             if (actualProperty == null)
-                logger.LogError($"Tried to deconstruct with invalid property name ({propertyName}) on type {type.GetPath()}.");
-
-            // TODO
-            //result.Add(new MemberInfo(actualProperty.Type, propertyName));
+                if (logger != null)
+                    logger.LogError(
+                        $"Tried to deconstruct with invalid property name ({propertyName}) on type {type.GetPath()}.");
+                else
+                    throw new Exception(
+                        $"Tried to deconstruct with invalid property name ({propertyName}) on type {type.GetPath()}.");
+            
+            result.Add(new ProxyMemberInfo(actualProperty.Type, propertyName));
 
             if (!path.Contains('.'))
                 return;
@@ -89,21 +93,29 @@ namespace GameArchitect.Design.Attributes
                 var deconstructedPath = new List<IMemberInfo>();
                 DeconstructPath(logger, type, propertyPath, ref deconstructedPath);
 
-                // TODO
-                //result.Add(new MemberInfo(deconstructedPath.Last().Type, $"{name}{deconstructedPath.Aggregate(string.Empty, (previous, current) => previous + current.Name)}"));
+                result.Add(new ProxyMemberInfo(deconstructedPath.Last().Type, $"{name}{deconstructedPath.Aggregate(string.Empty, (previous, current) => previous + current.Name)}"));
             }
+        }
+
+        public static bool TryDeconstruct(IMetaInfo info, ref List<IMemberInfo> values)
+        {
+            return TryDeconstruct(null, info, ref values);
         }
 
         public static bool TryDeconstruct(ILogger<IValidatable> logger, IMetaInfo info, ref List<IMemberInfo> values)
         {
-            if (!info.HasAttribute<DeconstructAttribute>())
-                return false;
-
             if (!(info is IMemberInfo memberInfo))
                 return false;
 
+            if (!info.HasAttribute<DeconstructAttribute>() && !memberInfo.Type.ImplementsInterface<IDeconstructible>())
+                return false;
+
             var deconstruct = info.GetAttribute<DeconstructAttribute>();
-            Deconstruct(logger, memberInfo.Type, info.Name, deconstruct.Properties, ref values);
+            var deconstructProperties = deconstruct == null
+                ? memberInfo.Type.Create<IDeconstructible>().Deconstruct()
+                : deconstruct.Properties;
+
+            Deconstruct(logger, memberInfo.Type, info.Name, deconstructProperties.ToList(), ref values);
 
             return true;
         }

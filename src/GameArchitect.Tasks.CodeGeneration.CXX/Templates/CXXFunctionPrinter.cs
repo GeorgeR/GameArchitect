@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GameArchitect.Design;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Extensions;
@@ -9,18 +10,18 @@ using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 {
-    public class FunctionPrinter : IPrinter<FunctionInfo>
+    public class CXXFunctionPrinter : PrinterBase, ICXXPrinter<FunctionInfo>
     {
-        protected ILoggerFactory LoggerFactory { get; }
-        
-        protected virtual INameTransformer NameTransformer { get; } = new CXXNameTransformer();
-        protected virtual ITypeTransformer TypeTransformer { get; } = new CXXTypeTransformer();
+        protected virtual ICXXPrinter<IMemberInfo> ParameterPrinter { get; }
 
-        protected virtual IPrinter<IMemberInfo> ParameterPrinter { get; } = new ParameterPrinter();
-
-        public FunctionPrinter(ILoggerFactory loggerFactory)
+        public CXXFunctionPrinter(
+            ILogger<ITemplate> log, 
+            INameTransformer nameTransformer,
+            ITypeTransformer typeTransformer,
+            ICXXPrinter<IMemberInfo> parameterPrinter)
+            : base(log, nameTransformer, typeTransformer)
         {
-            LoggerFactory = loggerFactory;
+            ParameterPrinter = parameterPrinter;
         }
 
         protected virtual string PrintParameters(FunctionInfo info, CXXFileType fileType)
@@ -30,7 +31,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             info.GetParameters().ForEach(p =>
             {
                 var deconstructed = new List<IMemberInfo>();
-                if (DeconstructAttribute.TryDeconstruct(LoggerFactory.CreateLogger<IValidatable>(), p, ref deconstructed))
+                if (DeconstructAttribute.TryDeconstruct(p, ref deconstructed))
                     deconstructed.ForEach(o => { sb.Append(ParameterPrinter.Print(o, fileType) + ", "); });
                 else
                     sb.Append(ParameterPrinter.Print(p, fileType) + ", ");
@@ -59,9 +60,6 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             return sb.ToString();
         }
 
-        public string Print(FunctionInfo info)
-        {
-            throw new NotImplementedException($"Using the CXXFileType overload.");
-        }
+        public string Print(FunctionInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
     }
 }

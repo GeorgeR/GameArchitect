@@ -1,11 +1,17 @@
 Clear-Host
 
 Push-Location $PSScriptRoot
-$packDir = $PSScriptRoot + "\\nuget"
+$packDir = $PSScriptRoot + "\\nuget\\"
+if(!(Test-Path $packDir)) {
+    New-Item -ItemType Directory -Force -Path $packDir
+}
+
 Write-Host $packDir
-$projects = Get-ChildItem -Path $PSScriptRoot\\src -Recurse | where {$_.extension -eq ".nupkg" }
+$projects = Get-ChildItem -Path $PSScriptRoot\src -Recurse | where {$_.extension -eq ".nupkg" }
 foreach ($project in $projects) {
     Copy-Item -Path $project.FullName -Destination $packDir
+    Write-Host $project.FullName
+    Write-Host $packDir
 }
 Pop-Location
 

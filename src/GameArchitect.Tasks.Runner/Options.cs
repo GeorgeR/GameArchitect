@@ -4,7 +4,7 @@ namespace GameArchitect.Tasks.Runner
 {
     public class Options
     {
-        [Option('e', "entities", Required = false, HelpText = "Path to assemblies containing entities (comma seperated if multiple)")]
+        [Option('e', "entities", Required = true, HelpText = "Path to assemblies containing entities (comma seperated if multiple)")]
         public string EntityPaths { get; set; }
 
         [Option('t', "task", Required = false, HelpText = "Task to run, defaults to the first task found in the specified assembly.")]

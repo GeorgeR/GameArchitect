@@ -19,21 +19,25 @@ namespace GameArchitect.Tasks.Runner
         public TaskBootstrap(TaskCatalog taskCatalog, ExportCatalog exports, string taskName, string taskOptionsFile)
         {
             if (!string.IsNullOrEmpty(taskName) && !taskCatalog.HasNamedTask(taskName))
-                throw new Exception($"No task found with name {taskName}.");
+                throw new Exception($"No task found with name {taskName}. Are you sure the task has an [Export] attribute?");
             
-            if(!File.Exists(taskOptionsFile))
-                throw new Exception($"Task options were not defined or the file was not found.");
+            //if(!File.Exists(taskOptionsFile))
+            //    throw new Exception($"Task options were not defined or the file was not found.");
 
             Exports = exports;
 
-            Task = taskCatalog.FirstOrDefault();
+            Task = taskCatalog[taskName];
             if(Task == null)
                 throw new NullReferenceException($"Default task not found. Do the referenced dll's have an [Export] attribute?");
 
-            var optionsStr = File.ReadAllText(taskOptionsFile);
-            var taskOptions = JsonConvert.DeserializeObject(optionsStr, Task.OptionsType) as ITaskOptions;
-            if(taskOptions == null)
-                throw new Exception($"TaskOptions not parsed.");
+            ITaskOptions taskOptions = null;
+            if (!string.IsNullOrEmpty(taskOptionsFile))
+            {
+                var optionsStr = File.ReadAllText(taskOptionsFile);
+                taskOptions = JsonConvert.DeserializeObject(optionsStr, Task.OptionsType) as ITaskOptions;
+                if (taskOptions == null)
+                    throw new JsonReaderException($"TaskOptions not parsed.");
+            }
 
             Options = taskOptions;
         }

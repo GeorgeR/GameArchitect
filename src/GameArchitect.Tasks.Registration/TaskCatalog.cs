@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using GameArchitect.Extensions;
+using GameArchitect.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.Registration
@@ -16,6 +17,8 @@ namespace GameArchitect.Tasks.Registration
 
         private ILogger<TaskCatalog> Log { get; }
 
+        private TaskComparer TaskComparer { get; } = new TaskComparer();
+
         private readonly IDictionary<string, ITask> _tasks = new Dictionary<string, ITask>();
         public ITask this[string taskName]
         {
@@ -24,7 +27,7 @@ namespace GameArchitect.Tasks.Registration
                 if(!_isComposed)
                     throw new Exception($"TaskCatalog.Compose() not called.");
 
-                return _tasks[taskName];
+                return _tasks[taskName.ToLower()];
             }
         }
 
@@ -38,7 +41,7 @@ namespace GameArchitect.Tasks.Registration
             if (!_isComposed)
                 throw new Exception($"TaskCatalog.Compose() not called.");
 
-            return _tasks.ContainsKey(taskName);
+            return _tasks.ContainsKey(taskName.ToLower());
         }
 
         public void Compose(params string[] taskAssemblyPaths)
@@ -55,14 +58,14 @@ namespace GameArchitect.Tasks.Registration
                     var assemblyCatalog = new AssemblyCatalog(assembly);
                     catalog.Catalogs.Add(assemblyCatalog);
 
-                    Console.WriteLine($"Registering {Path.GetFileName(o)} in TaskCatalog.");
+                    Log.LogInformation($"Registering {Path.GetFileName(o)} in TaskCatalog.");
 
                     o = Path.GetDirectoryName(o);
                 }
 
                 if (Directory.Exists(o))
                 {
-                    Console.WriteLine($"Registering directory {o} in TaskCatalog.");
+                    Log.LogInformation($"Registering directory {o} in TaskCatalog.");
 
                     var directoryCatalog = new DirectoryCatalog(o);
                     catalog.Catalogs.Add(directoryCatalog);
@@ -71,15 +74,25 @@ namespace GameArchitect.Tasks.Registration
 
             using (var container = new CompositionContainer(catalog))
             {
-                Console.WriteLine($"Found {container.GetExports<ITask>().Count()} tasks.");
-                foreach (var export in container.GetExports<ITask>().Distinct())
+                var uniqueTasks = container
+                    .GetExports<ITask>()
+                    .Distinct(TaskComparer)
+                    .ToList();
+
+                Log.LogInformation($"Found {uniqueTasks.Count} tasks.");
+                foreach (var export in uniqueTasks)
                 {
                     var e = export.Value;
-                    var taskName = string.IsNullOrEmpty(e.Name) ? e.GetType().Name.ToLower() : e.Name.ToLower();
+                    var taskName = string.IsNullOrEmpty(e.Name) 
+                        ? e.GetType().Name.Replace("Task", "").ToLower()
+                        : e.Name.ToLower();
+
                     if (!_tasks.ContainsKey(taskName))
                     {
-                        Console.WriteLine($"Found task: {taskName}.");
-                        _tasks.Add(taskName, e);
+                        Log.LogInformation($"Found task: {taskName}.");
+                        e.Name = taskName;
+                        if(IsValid(e))
+                            _tasks.Add(taskName, e);
                     }
                 }
             }
@@ -95,6 +108,31 @@ namespace GameArchitect.Tasks.Registration
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        private bool IsValid(ITask task)
+        {
+            var result = true;
+
+            if (task.ParameterType != null)
+            {
+                if (!task.ParameterType.ImplementsInterface<ITaskParameters>())
+                {
+                    Log.LogError($"Parameters for task {task.Name} was set but did not implement ITaskParameters.");
+                    result = false;
+                }
+            }
+
+            if (task.OptionsType != null)
+            {
+                if (!task.OptionsType.ImplementsInterface<ITaskOptions>())
+                {
+                    Log.LogError($"Options for task {task.Name} was set but did not implement ITaskOptions.");
+                    result = false;
+                }
+            }
+
+            return result;
         }
     }
 }

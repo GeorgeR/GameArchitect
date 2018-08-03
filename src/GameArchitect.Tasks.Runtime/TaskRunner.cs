@@ -24,8 +24,8 @@ namespace GameArchitect.Tasks.Runtime
 
         public async Task<bool> Run(ITask task, ExportCatalog exports, ITaskOptions options)
         {
-            if(options == null)
-                Console.WriteLine("Options provided to Task.Run was null.");
+            //if(options == null)
+            //    Console.WriteLine("Options provided to Task.Run was null.");
 
             Services.AddScoped(typeof(ITaskOptions), provider => options);
             ServiceProvider = Services.BuildServiceProvider();

@@ -2,7 +2,9 @@
 {
     public enum CXXFileType
     {
+        /* Header */
         Declaration,
+        /* CPP */
         Definition
     }
 }

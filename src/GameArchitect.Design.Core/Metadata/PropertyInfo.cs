@@ -1,15 +1,23 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Support;
 using GameArchitect.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
-    public sealed class PropertyInfo : MemberInfoBase<System.Reflection.PropertyInfo>
+    public interface IPropertyInfo : IMemberInfo<System.Reflection.PropertyInfo>
+    {
+        IEnumerable<IMemberInfo> Deconstruct();
+    }
+
+    public class PropertyInfo : MemberInfoBase<System.Reflection.PropertyInfo>, IPropertyInfo
     {
         public override string TypeName => "Property";
 
-        public PropertyInfo(TypeInfo declaringType, System.Reflection.PropertyInfo native)
+        public PropertyInfo(ITypeInfo declaringType, System.Reflection.PropertyInfo native)
             : base(declaringType, native)
         {
             Name = Native.Name;
@@ -23,6 +31,18 @@ namespace GameArchitect.Design.Metadata
 
             if (native.CanRead)
                 Permission |= Permission.Read;
+        }
+
+        public IEnumerable<IMemberInfo> Deconstruct()
+        {
+            if (!HasAttribute<DeconstructAttribute>() && !Type.ImplementsInterface<IDeconstructible>())
+            {
+                Console.WriteLine("WHAT");
+                return null;
+            }
+            
+            var result = new List<IMemberInfo>();
+            return DeconstructAttribute.TryDeconstruct(this, ref result) ? result : null;
         }
 
         public override string GetPath()

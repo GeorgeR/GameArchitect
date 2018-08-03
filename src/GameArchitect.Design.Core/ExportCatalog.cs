@@ -3,30 +3,29 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using GameArchitect.Design.Attributes;
+using GameArchitect.Design.Metadata;
 using GameArchitect.Extensions;
 using GameArchitect.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
-using TypeInfo = GameArchitect.Design.Metadata.TypeInfo;
 
 namespace GameArchitect.Design
 {
-    public class ExportCatalog : IEnumerable<TypeInfo>, IEnumerable<Type>, IValidatable
+    public class ExportCatalog : IEnumerable<ITypeInfo>, IEnumerable<Type>, IValidatable
     {
-        private IEnumerable<Assembly> Assemblies { get; }
-        private IList<TypeInfo> Types { get; set; }
+        private IEnumerable<System.Reflection.Assembly> Assemblies { get; }
+        private IList<ITypeInfo> Types { get; set; }
 
         public ExportCatalog(params string[] paths)
         {
-            var a = new List<Assembly>();
+            var a = new List<System.Reflection.Assembly>();
 
             paths.ForEach(p =>
             {
                 if(File.Exists(p))
-                    a.Add(Assembly.LoadFile(p));
+                    a.Add(System.Reflection.Assembly.LoadFile(p));
                 else if (Directory.Exists(p))
-                    a.AddRange(Directory.GetFiles(p, "*.dll").Select(Assembly.LoadFile));
+                    a.AddRange(Directory.GetFiles(p, "*.dll").Select(System.Reflection.Assembly.LoadFile));
                 else
                     throw new FileNotFoundException($"File or folder not found: {p}");
             });
@@ -34,19 +33,29 @@ namespace GameArchitect.Design
             Assemblies = a;
         }
 
-        public ExportCatalog(params Assembly[] assemblies)
+        public ExportCatalog(params System.Reflection.Assembly[] assemblies)
         {
             Assemblies = assemblies;
         }
 
-        private IEnumerable<TypeInfo> GetTypes()
+        public ITypeInfo Get<T>()
+        {
+            var result = GetTypes().FirstOrDefault(o => o.Native.AssemblyQualifiedName.Equals(typeof(T).AssemblyQualifiedName));
+            if (result == null)
+                throw new NullReferenceException($"Tried to get type {typeof(T).Name} from ExportCatalog but it was not found.");
+
+            return result;
+        }
+
+        private IEnumerable<ITypeInfo> GetTypes()
         {
             if (Types == null)
             {
-                Types = Assemblies
+                Types = new List<ITypeInfo>();
+
+                Types.AddRange(Assemblies
                     .SelectMany(o => o.GetExportedTypes().Where(t => t.HasAttribute<ExportAttribute>()))
-                    .Select(o => new TypeInfo(o))
-                    .ToList();
+                    .Select(o => new TypeInfo(o)));
             }
 
             return Types;
@@ -57,7 +66,7 @@ namespace GameArchitect.Design
             return GetTypes().Select(o => o.Native).GetEnumerator();
         }
 
-        public IEnumerator<TypeInfo> GetEnumerator()
+        public IEnumerator<ITypeInfo> GetEnumerator()
         {
             return GetTypes().GetEnumerator();
         }

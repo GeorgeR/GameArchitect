@@ -1,32 +1,42 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using GameArchitect.Extensions.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
-    public sealed class EventInfo : MemberInfoBase<System.Reflection.EventInfo>
+    public interface IEventInfo :  IMemberInfo<System.Reflection.EventInfo>
+    {
+        IList<IParameterInfo> Parameters { get; }
+    }
+
+    public class EventInfo : MemberInfoBase<System.Reflection.EventInfo>, IEventInfo
     {
         public override string TypeName { get; } = "Event";
 
-        public EventInfo(TypeInfo declaringType, System.Reflection.EventInfo native)
+        public EventInfo(ITypeInfo declaringType, System.Reflection.EventInfo native)
             : base(declaringType, native)
         {
             Name = Native.Name;
             Type = ResolveType(Native.EventHandlerType, Native);
         }
 
-        private IQueryable<ParameterInfo> _parameters;
-        public IQueryable<ParameterInfo> GetParameters()
+        private IList<IParameterInfo> _parameters;
+        public IList<IParameterInfo> Parameters
         {
-            if (_parameters != null)
+            get
+            {
+                if (_parameters != null)
+                    return _parameters;
+
+                _parameters = new List<IParameterInfo>();
+                //_parameters.AddRange(
+                //    Native
+                //        .GetParameters()
+                //        .Select(o => new ParameterInfo(this, DeclaringType, o)));
+
                 return _parameters;
-
-            //_parameters = Native
-            //    .GetParameters()
-            //    .Select(o => new ParameterInfo(this, DeclaringType, o))
-            //    .AsQueryable();
-
-            return GetParameters();
+            }
         }
 
         public override string GetPath()

@@ -14,8 +14,8 @@ namespace GameArchitect.Design.Metadata
         bool IsOptional { get; }
         CollectionType CollectionType { get; }
 
-        TypeInfo Type { get; } // If this is null, the type is void
-        TypeInfo DeclaringType { get; }
+        ITypeInfo Type { get; } // If this is null, the type is void
+        ITypeInfo DeclaringType { get; }
     }
 
     public interface IMemberInfo<out TNative> : IMemberInfo, IMetaInfo<TNative>
@@ -36,17 +36,17 @@ namespace GameArchitect.Design.Metadata
         public bool IsOptional { get; protected set; }
         public CollectionType CollectionType { get; protected set; }
 
-        public TypeInfo Type { get; protected set; }
-        public TypeInfo DeclaringType { get; }
+        public ITypeInfo Type { get; protected set; }
+        public ITypeInfo DeclaringType { get; }
 
-        protected MemberInfoBase(TypeInfo declaringType, TNative native)
+        protected MemberInfoBase(ITypeInfo declaringType, TNative native)
         {
             Native = native;
             DeclaringType = declaringType;
         }
 
         /* Note Collections of optionals are not supported. */
-        protected TypeInfo ResolveType(Type native, TNative member)
+        protected ITypeInfo ResolveType(Type native, TNative member)
         {
             var isOptional = native.Name.ToLower().Contains("nullable")
                              || native.Name.Contains("?")

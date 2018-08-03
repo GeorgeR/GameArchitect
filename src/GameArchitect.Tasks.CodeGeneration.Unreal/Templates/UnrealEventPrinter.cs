@@ -1,29 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GameArchitect.Design;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.CXX;
+using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 {
-    internal class EventPrinter : CXX.Templates.EventPrinter
+    public class UnrealEventPrinter : CXXEventPrinter
     {
-        private ILoggerFactory LoggerFactory { get; }
-
-        protected override INameTransformer NameTransformer { get; } = new UnrealNameTransformer();
-        protected override ITypeTransformer TypeTransformer { get; } = new UnrealTypeTransformer();
-
-        protected override CXX.Templates.IPrinter<IMemberInfo> ParameterPrinter { get; } = new ParameterPrinter();
-
-        public EventPrinter(ILoggerFactory loggerFactory)
-        {
-            LoggerFactory = loggerFactory;
-        }
+        public UnrealEventPrinter(
+            ILogger<ITemplate> log, 
+            INameTransformer nameTransformer, 
+            ITypeTransformer typeTransformer,
+            ICXXPrinter<IMemberInfo> parameterPrinter) 
+            : base(log, nameTransformer, typeTransformer, parameterPrinter) { }
 
         protected virtual string PrintParameters(EventInfo info, CXXFileType fileType, out int parameterCount)
         {
@@ -33,7 +30,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             info.GetParameters().ForEach(p =>
             {
                 var deconstructed = new List<IMemberInfo>();
-                if (DeconstructAttribute.TryDeconstruct(LoggerFactory.CreateLogger<IValidatable>(), p, ref deconstructed))
+                if (DeconstructAttribute.TryDeconstruct(p, ref deconstructed))
                     deconstructed.ForEach(o =>
                     {
                         sb.Append(ParameterPrinter.Print(o, fileType) + ", ");
