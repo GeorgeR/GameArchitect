@@ -25,19 +25,18 @@ namespace GameArchitect.Design.Attributes.Db
             Multiplicity = multiplicity;
         }
 
-        public PropertyInfo GetReferencedKey(PropertyInfo property)
+        public IPropertyInfo GetReferencedKey(IPropertyInfo property)
         {
             //IsValid(property);
-            return property.Type.GetProperties().FirstOrDefault(p => p.HasAttribute<DbKeyAttribute>()); 
+            return property.Type.Properties.FirstOrDefault(p => p.HasAttribute<DbKeyAttribute>()); 
         }
 
         public bool IsValid<TMeta>(ILogger<IValidatable> logger,TMeta info) where TMeta : IMetaInfo
         {
             // NOTE: This currently assumes a singular (non composite) key
-            if (info is PropertyInfo)
+            if (info is IPropertyInfo propertyInfo)
             {
-                var propertyInfo = info as PropertyInfo;
-                if (!propertyInfo.Type.GetProperties().Any(p => p.HasAttribute<DbKeyAttribute>()))
+                if (!propertyInfo.Type.Properties.Any(p => p.HasAttribute<DbKeyAttribute>()))
                     logger.LogError($"A DbReference attribute was specified for type {propertyInfo.Type.GetPath()}, however this type doesn't have and DbKey attribute so it doesn't know how to reference it!");
             }
 

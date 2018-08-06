@@ -25,7 +25,7 @@ namespace GameArchitect.Design.Attributes
 
             ForMeta<IMemberInfo>(info, o =>
             {
-                if(o.Type == typeof(void))
+                if(o.Type.Native == typeof(void))
                     logger.LogError($"A deconstruct attribute was specified for {o.GetPath()} with a void return type.");
 
                 var type = o.Type;
@@ -40,7 +40,7 @@ namespace GameArchitect.Design.Attributes
                     }
                 }
 
-                var typeProperties = type.GetProperties()
+                var typeProperties = type.Properties
                     .Select(p => p.Name)
                     .ToList();
 
@@ -51,12 +51,12 @@ namespace GameArchitect.Design.Attributes
             return true;
         }
 
-        private static void DeconstructPath(ILogger<IValidatable> logger, TypeInfo type, string path, ref List<IMemberInfo> result)
+        private static void DeconstructPath(ILogger<IValidatable> logger, ITypeInfo type, string path, ref List<IMemberInfo> result)
         {
             if (path.Length == 0)
                 return;
 
-            var actualProperties = type.GetProperties();
+            var actualProperties = type.Properties;
             var propertyName = path.Split('.')[0];
 
             var actualProperty = actualProperties.FirstOrDefault(o => o.Name == propertyName);
@@ -77,7 +77,7 @@ namespace GameArchitect.Design.Attributes
             DeconstructPath(logger, actualProperty.Type, path, ref result);
         }
 
-        private static void Deconstruct(ILogger<IValidatable> logger, TypeInfo type, string name, List<string> deconstructionProperties, ref List<IMemberInfo> result)
+        private static void Deconstruct(ILogger<IValidatable> logger, ITypeInfo type, string name, List<string> deconstructionProperties, ref List<IMemberInfo> result)
         {
             var propertyPaths = deconstructionProperties;
             if (propertyPaths == null || propertyPaths.Count == 0)

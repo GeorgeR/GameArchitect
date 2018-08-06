@@ -44,34 +44,36 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX
             return result;
         }
 
-        public virtual string TransformType(TypeInfo type)
+        public virtual string TransformType(ITypeInfo type)
         {
             var result = string.Empty;
-            if (type == typeof(string))
+
+            var nativeType = type.Native;
+            if (nativeType == typeof(string))
                 result = "std::string";
-            else if (type == typeof(sbyte))
+            else if (nativeType == typeof(sbyte))
                 result = "int8";
-            else if (type == typeof(byte))
+            else if (nativeType == typeof(byte))
                 result = "uint8";
-            else if (type == typeof(short))
+            else if (nativeType == typeof(short))
                 result = "int16";
-            else if (type == typeof(ushort))
+            else if (nativeType == typeof(ushort))
                 result = "uint16";
-            else if (type == typeof(int))
+            else if (nativeType == typeof(int))
                 result = "int32";
-            else if (type == typeof(uint))
+            else if (nativeType == typeof(uint))
                 result = "uint32";
-            else if (type == typeof(long))
+            else if (nativeType == typeof(long))
                 result = "int64";
-            else if (type == typeof(ulong))
+            else if (nativeType == typeof(ulong))
                 result = "uint64";
-            else if (type == typeof(bool))
+            else if (nativeType == typeof(bool))
                 result = "bool";
-            else if (type == typeof(void))
+            else if (nativeType == typeof(void))
                 result = "void";
-            else if (type == typeof(float))
+            else if (nativeType == typeof(float))
                 result = "float";
-            else if (type == typeof(double))
+            else if (nativeType == typeof(double))
                 result = "double";
             else
                 result = NameTransformer.TransformName(type, type.Name, NameContext.Type);

@@ -12,7 +12,7 @@ namespace GameArchitect.Design.Unreal.Attributes
         {
             base.IsValid(logger, info);
 
-            ForMeta<TypeInfo>(info, e =>
+            ForMeta<ITypeInfo>(info, e =>
             {
                 if(!e.Inherits<byte>())
                     logger.LogError($"An enum marked as UnrealEnum ({info.GetPath()}) must inherit from byte (uint8)");

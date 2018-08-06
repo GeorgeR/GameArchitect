@@ -1,11 +1,9 @@
 ﻿using System.Text;
 using GameArchitect.Design;
 using GameArchitect.Design.Metadata;
-using GameArchitect.Design.Metadata.Extensions;
-using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.CXX;
-using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
+using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
 using Microsoft.Extensions.Logging;
 
@@ -17,10 +15,10 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             ILogger<ITemplate> log, 
             INameTransformer nameTransformer, 
             ITypeTransformer typeTransformer, 
-            ICXXPrinter<PropertyInfo> propertyPrinter, 
-            ICXXPrinter<EventInfo> eventPrinter, 
-            ICXXPrinter<FunctionInfo> functionPrinter,
-            TypeInfo info) 
+            ICXXPrinter<IPropertyInfo> propertyPrinter, 
+            ICXXPrinter<IEventInfo> eventPrinter, 
+            ICXXPrinter<IFunctionInfo> functionPrinter,
+            ITypeInfo info) 
             : base(log, nameTransformer, typeTransformer, propertyPrinter, eventPrinter, functionPrinter, info) { }
 
         public override string Print(CXXFileType fileType)
@@ -48,7 +46,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 
                 sb.AppendLine($"public:");
 
-                Info.GetProperties().ForEach(o =>
+                Info.Properties.ForEach(o =>
                 {
                     sb.Append(PropertyPrinter.Print(o, CXXFileType.Declaration));
                     sb.AppendEmptyLine();

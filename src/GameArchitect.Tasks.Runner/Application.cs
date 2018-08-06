@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using CommandLine;
 using GameArchitect.Design;
+using GameArchitect.Design.Metadata;
 using GameArchitect.Tasks.Registration;
 using GameArchitect.Tasks.Runtime;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,13 +32,17 @@ namespace GameArchitect.Tasks.Runner
             serviceCollection.AddSingleton<IServiceCollection>(provider => serviceCollection);
             serviceCollection.AddScoped<ITaskParameters, TaskParameters>();
             serviceCollection.AddSingleton<TaskCatalog>();
+            serviceCollection.AddSingleton<DefaultMetadataProvider>();
+            serviceCollection.AddSingleton<ExportCatalog>();
             serviceCollection.AddLogging(_ => _.AddConsole());
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
             Log = serviceProvider.GetService<ILogger<Application>>();
 
             var entityPaths = options.EntityPaths.Split(',');
-            var exportCatalog = new ExportCatalog(entityPaths);
+            var exportCatalog = serviceProvider.GetService<ExportCatalog>();
+            exportCatalog.FindInAssemblies(entityPaths);
+
             Log.LogInformation($"{exportCatalog.ToList<Type>().Count} entities found in {entityPaths.FirstOrDefault()}.");
 
             serviceCollection.AddSingleton(provider => exportCatalog);

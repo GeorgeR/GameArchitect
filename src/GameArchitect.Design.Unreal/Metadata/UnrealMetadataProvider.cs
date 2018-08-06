@@ -10,18 +10,16 @@ namespace GameArchitect.Design.Unreal.Metadata
             ILoggerFactory logFactory, 
             INameTransformer nameTransformer,
             ITypeTransformer typeTransformer) 
-            : base(logFactory, nameTransformer, typeTransformer)
+            : base(logFactory, nameTransformer, typeTransformer) { }
+
+        public override TTypeInfo Create<TTypeInfo>(Type type)
         {
+            return new UnrealTypeInfo(type) as TTypeInfo;
         }
 
-        public override ITypeInfo Create(Type type)
+        public override TPropertyInfo Create<TPropertyInfo>(ITypeInfo declaringType, System.Reflection.PropertyInfo propertyInfo)
         {
-            return new UnrealTypeInfo(type);
-        }
-
-        public override IPropertyInfo Create(ITypeInfo declaringType, System.Reflection.PropertyInfo propertyInfo)
-        {
-            return new UnrealPropertyInfo(declaringType, propertyInfo);
+            return new UnrealPropertyInfo(declaringType, propertyInfo) as TPropertyInfo;
         }
     }
 }

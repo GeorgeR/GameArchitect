@@ -10,18 +10,16 @@ namespace GameArchitect.Design.CXX.Metadata
             ILoggerFactory logFactory,
             INameTransformer nameTransformer,
             ITypeTransformer typeTransformer)
-            : base(logFactory, nameTransformer, typeTransformer)
+            : base(logFactory, nameTransformer, typeTransformer) { }
+
+        public override TTypeInfo Create<TTypeInfo>(Type type)
         {
+            return new CXXTypeInfo(type) as TTypeInfo;
         }
 
-        public override ITypeInfo Create(Type type)
+        public override TPropertyInfo Create<TPropertyInfo>(ITypeInfo declaringType, System.Reflection.PropertyInfo propertyInfo)
         {
-            return new CXXTypeInfo(type);
-        }
-
-        public override IPropertyInfo Create(ITypeInfo declaringType, System.Reflection.PropertyInfo propertyInfo)
-        {
-            return new CXXPropertyInfo(declaringType, propertyInfo);
+            return new CXXPropertyInfo(declaringType, propertyInfo) as TPropertyInfo;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using GameArchitect.Design;
-using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
+using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
+namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {
     internal class UnrealParameterPrinter : CXXParameterPrinter
     {

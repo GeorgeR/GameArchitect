@@ -5,7 +5,7 @@ using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Support;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
+namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
 {
     public class CXXParameterPrinter : PrinterBase, ICXXPrinter<IMemberInfo>
     {

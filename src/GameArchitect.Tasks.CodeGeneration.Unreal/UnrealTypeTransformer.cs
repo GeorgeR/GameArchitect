@@ -42,25 +42,26 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
             return result;
         }
 
-        public override string TransformType(TypeInfo type)
+        public override string TransformType(ITypeInfo type)
         {
             var result = base.TransformType(type);
 
-            if (type == typeof(string))
+            var nativeType = type.Native;
+            if (nativeType == typeof(string))
                 result = "FString";
-            else if (type == typeof(Vector3<float>) || type == typeof(Vector3<double>))
+            else if (nativeType == typeof(Vector3<float>) || nativeType == typeof(Vector3<double>))
                 result = "FVector";
-            else if (type == typeof(Vector2<float>) || type == typeof(Vector2<double>))
+            else if (nativeType == typeof(Vector2<float>) || nativeType == typeof(Vector2<double>))
                 result = "FVector2D";
-            else if (type == typeof(Vector4<float>) || type == typeof(Vector4<double>))
+            else if (nativeType == typeof(Vector4<float>) || nativeType == typeof(Vector4<double>))
                 result = "FVector4";
-            else if (type == typeof(Quaternion<float>) || type == typeof(Quaternion<double>))
+            else if (nativeType == typeof(Quaternion<float>) || nativeType == typeof(Quaternion<double>))
                 result = "FQuat";
-            else if (type == typeof(Rotation<float>) || type == typeof(Rotation<double>))
+            else if (nativeType == typeof(Rotation<float>) || nativeType == typeof(Rotation<double>))
                 result = "FRotator";
-            else if (type == typeof(Box<float>) || type == typeof(Box<double>))
+            else if (nativeType == typeof(Box<float>) || nativeType == typeof(Box<double>))
                 result = "FBox";
-            else if (type == typeof(Rect<float>) || type == typeof(Rect<double>))
+            else if (nativeType == typeof(Rect<float>) || nativeType == typeof(Rect<double>))
                 result = "FBox2D";
             else
                 result = NameTransformer.TransformName(type, type.Name, NameContext.Type);

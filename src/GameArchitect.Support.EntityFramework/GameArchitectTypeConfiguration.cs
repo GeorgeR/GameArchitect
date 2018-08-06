@@ -5,6 +5,7 @@ using System.Reflection;
 using GameArchitect.Design;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Attributes.Db;
+using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Metadata.Extensions;
 using GameArchitect.Extensions;
 using GameArchitect.Extensions.Reflection;
@@ -33,13 +34,14 @@ namespace GameArchitect.Support.EntityFramework
             var typeInfo = new TypeInfo(typeof(T));
 
             var properties = typeInfo
-                .GetProperties()
+                .Properties
                 .WithAttribute<DbPropertyAttribute>()
-                .OrderBy(o => o.GetAttribute<DbPropertyAttribute>().Index);
+                .OrderBy(o => o.GetAttribute<DbPropertyAttribute>().Index)
+                .ToList();
 
             //MethodInfo propertyGenericMethod = null;
 
-            properties.OfType<PropertyInfo>().ForEach(p =>
+            properties.OfType<IPropertyInfo>().ForEach(p =>
             {
                 if (p.HasAttribute<DbReferenceAttribute>())
                 {
@@ -111,7 +113,7 @@ namespace GameArchitect.Support.EntityFramework
                 }
             });
 
-            var keyProperties = properties.WithAttribute<DbKeyAttribute>();
+            var keyProperties = properties.WithAttribute<DbKeyAttribute>().ToList();
             if(!keyProperties.Any())
                 throw new Exception($"Type {typeInfo.GetPath()} doesn't have any properties marked [DbKey].");
             

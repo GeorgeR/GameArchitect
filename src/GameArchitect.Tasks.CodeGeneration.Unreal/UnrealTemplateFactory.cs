@@ -1,7 +1,6 @@
 ﻿using System;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
-using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
 using GameArchitect.Tasks.CodeGeneration.Unreal.Templates;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,21 +10,25 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
 {
     public class UnrealTemplateFactory : ITemplateFactory
     {
-        private IServiceCollection Services { get; }
-        private IServiceProvider ServiceProvider => Services.BuildServiceProvider();
-
         private ILogger<ITemplate> Log { get; }
-        private IAttachedMetadataProvider AttachedMetadata { get; }
-        
-        public UnrealTemplateFactory(IServiceCollection services)
+        private IMetadataProvider MetadataProvider { get; set; }
+
+        public UnrealTemplateFactory(ILogger<ITemplate> log)
         {
-            Services = services;
-            
-            Log = ServiceProvider.GetService<ILogger<ITemplate>>();
-            AttachedMetadata = ServiceProvider.GetService<UnrealMetadataProvider>();
+            Log = log;
         }
 
-        public ITemplate Create(TypeInfo typeInfo)
+        public void Setup(IServiceCollection services)
+        {
+            services.AddTransient<UnrealStructTemplate>();
+            services.AddTransient<UnrealClassTemplate>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            MetadataProvider = serviceProvider.GetService<IMetadataProvider>();
+        }
+
+        public ITemplate Create(ITypeInfo typeInfo)
         {
             if (typeInfo.HasAttribute<UnrealStructAttribute>())
                 return CreateForStruct(typeInfo);
@@ -33,14 +36,17 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
             return CreateForClass(typeInfo);
         }
 
-        private ICXXTemplate CreateForStruct(TypeInfo typeInfo)
+        private ICXXTemplate CreateForStruct(ITypeInfo typeInfo)
         {
-            return new UnrealStructTemplate(Log, typeInfo);
+            throw new NotImplementedException();
+            //return MetadataProvider.Create<Unreal>()
+            //return new UnrealStructTemplate(Log, typeInfo);
         }
 
-        private ICXXTemplate CreateForClass(TypeInfo typeInfo)
+        private ICXXTemplate CreateForClass(ITypeInfo typeInfo)
         {
-            return new UnrealClassTemplate(Log, typeInfo);
+            throw new NotImplementedException();
+            //return new UnrealClassTemplate(Log, typeInfo);
         }
     }
 }

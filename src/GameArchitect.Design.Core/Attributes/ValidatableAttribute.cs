@@ -14,26 +14,26 @@ namespace GameArchitect.Design.Attributes
 
             var message = $"This attribute is not valid on type {info.TypeName} called {info.GetPath()}.";
 
-            if (!(validOn.HasFlag(AttributeTargets.Class) || validOn.HasFlag(AttributeTargets.Struct) || validOn.HasFlag(AttributeTargets.Enum)) && info is TypeInfo)
+            if (!(validOn.HasFlag(AttributeTargets.Class) || validOn.HasFlag(AttributeTargets.Struct) || validOn.HasFlag(AttributeTargets.Enum)) && info is ITypeInfo)
                 throw new Exception(message);
 
-            if (!validOn.HasFlag(AttributeTargets.Property) && info is PropertyInfo)
+            if (!validOn.HasFlag(AttributeTargets.Property) && info is IPropertyInfo)
                 throw new Exception(message);
 
-            if (!validOn.HasFlag(AttributeTargets.Method) && info is FunctionInfo)
+            if (!validOn.HasFlag(AttributeTargets.Method) && info is IFunctionInfo)
                 throw new Exception(message);
 
-            if (!validOn.HasFlag(AttributeTargets.Delegate) && info is EventInfo)
+            if (!validOn.HasFlag(AttributeTargets.Delegate) && info is IEventInfo)
                 throw new Exception(message);
 
-            if(!validOn.HasFlag(AttributeTargets.Parameter) && info is ParameterInfo)
+            if(!validOn.HasFlag(AttributeTargets.Parameter) && info is IParameterInfo)
                 throw new Exception(message);
 
-            TypeInfo outer = null;
-            if (info is TypeInfo)
-                outer = (info as TypeInfo);
-            else if (info is IMemberInfo)
-                outer = ((IMemberInfo) info).DeclaringType;
+            ITypeInfo outer = null;
+            if (info is ITypeInfo typeInfo)
+                outer = typeInfo;
+            else if (info is IMemberInfo memberInfo)
+                outer = memberInfo.DeclaringType;
 
             if(outer != null)
                 if (!outer.HasAttribute<ExportAttribute>())

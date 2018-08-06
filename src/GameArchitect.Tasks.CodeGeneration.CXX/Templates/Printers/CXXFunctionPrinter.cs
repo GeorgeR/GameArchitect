@@ -8,9 +8,9 @@ using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
+namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
 {
-    public class CXXFunctionPrinter : PrinterBase, ICXXPrinter<FunctionInfo>
+    public class CXXFunctionPrinter : PrinterBase, ICXXPrinter<IFunctionInfo>
     {
         protected virtual ICXXPrinter<IMemberInfo> ParameterPrinter { get; }
 
@@ -24,11 +24,11 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             ParameterPrinter = parameterPrinter;
         }
 
-        protected virtual string PrintParameters(FunctionInfo info, CXXFileType fileType)
+        protected virtual string PrintParameters(IFunctionInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
-            info.GetParameters().ForEach(p =>
+            info.Parameters.ForEach(p =>
             {
                 var deconstructed = new List<IMemberInfo>();
                 if (DeconstructAttribute.TryDeconstruct(p, ref deconstructed))
@@ -42,7 +42,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             return sb.ToString();
         }
 
-        public virtual string Print(FunctionInfo info, CXXFileType fileType)
+        public virtual string Print(IFunctionInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
@@ -51,7 +51,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 
             info.ForAttribute<AsyncAttribute>(attr =>
             {
-                parameterStr += $", std::function<void({(info.Type != typeof(void) ? returnTypeStr : string.Empty)})> Callback";
+                parameterStr += $", std::function<void({(info.Type.Native != typeof(void) ? returnTypeStr : string.Empty)})> Callback";
                 returnTypeStr = "void";
             });
 
@@ -60,6 +60,6 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             return sb.ToString();
         }
 
-        public string Print(FunctionInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
+        public string Print(IFunctionInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
     }
 }

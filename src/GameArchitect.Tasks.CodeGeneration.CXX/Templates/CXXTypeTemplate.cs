@@ -4,6 +4,7 @@ using System.Text;
 using GameArchitect.Design;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Extensions;
+using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
 using Microsoft.Extensions.Logging;
 
@@ -11,9 +12,9 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 {
     public class CXXTypeTemplate : PrinterBase, ICXXTemplate
     {
-        protected ICXXPrinter<PropertyInfo> PropertyPrinter { get; }
-        protected ICXXPrinter<EventInfo> EventPrinter { get; }
-        protected ICXXPrinter<FunctionInfo> FunctionPrinter { get; }
+        protected ICXXPrinter<IPropertyInfo> PropertyPrinter { get; }
+        protected ICXXPrinter<IEventInfo> EventPrinter { get; }
+        protected ICXXPrinter<IFunctionInfo> FunctionPrinter { get; }
 
         public Dictionary<CXXFileType, HashSet<string>> Includes { get; } =
             new Dictionary<CXXFileType, HashSet<string>>()
@@ -22,16 +23,16 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
                 {CXXFileType.Definition, new HashSet<string>()}
             };
 
-        protected TypeInfo Info { get; }
+        protected ITypeInfo Info { get; }
 
         public CXXTypeTemplate(
             ILogger<ITemplate> log, 
             INameTransformer nameTransformer, 
             ITypeTransformer typeTransformer,
-            ICXXPrinter<PropertyInfo> propertyPrinter,
-            ICXXPrinter<EventInfo> eventPrinter,
-            ICXXPrinter<FunctionInfo> functionPrinter,
-            TypeInfo info)
+            ICXXPrinter<IPropertyInfo> propertyPrinter,
+            ICXXPrinter<IEventInfo> eventPrinter,
+            ICXXPrinter<IFunctionInfo> functionPrinter,
+            ITypeInfo info)
             : base(log, nameTransformer, typeTransformer)
         {
             PropertyPrinter = propertyPrinter;

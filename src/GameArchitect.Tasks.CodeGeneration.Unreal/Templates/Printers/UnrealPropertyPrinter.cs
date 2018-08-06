@@ -4,11 +4,11 @@ using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Tasks.CodeGeneration.CXX;
-using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
+using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
+namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {
     public class UnrealPropertyPrinter : CXXPropertyPrinter
     {
@@ -18,7 +18,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             ITypeTransformer typeTransformer) 
             : base(log, nameTransformer, typeTransformer) { }
 
-        public override string Print(PropertyInfo info, CXXFileType fileType)
+        public override string Print(IPropertyInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 

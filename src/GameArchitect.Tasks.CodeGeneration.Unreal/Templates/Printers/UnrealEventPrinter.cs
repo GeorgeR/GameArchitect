@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using GameArchitect.Design;
 using GameArchitect.Design.Attributes;
@@ -7,11 +6,11 @@ using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.CXX;
-using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
+using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
+namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {
     public class UnrealEventPrinter : CXXEventPrinter
     {
@@ -22,12 +21,12 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             ICXXPrinter<IMemberInfo> parameterPrinter) 
             : base(log, nameTransformer, typeTransformer, parameterPrinter) { }
 
-        protected virtual string PrintParameters(EventInfo info, CXXFileType fileType, out int parameterCount)
+        protected virtual string PrintParameters(IEventInfo info, CXXFileType fileType, out int parameterCount)
         {
             var sb = new StringBuilder();
 
             var pCount = 0;
-            info.GetParameters().ForEach(p =>
+            info.Parameters.ForEach(p =>
             {
                 var deconstructed = new List<IMemberInfo>();
                 if (DeconstructAttribute.TryDeconstruct(p, ref deconstructed))
@@ -50,7 +49,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             return sb.ToString();
         }
 
-        public override string Print(EventInfo info, CXXFileType fileType)
+        public override string Print(IEventInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
@@ -63,7 +62,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             //var returnTypeStr = TypeTransformer.TransformType(info.Type);
             var parameterStr = PrintParameters(info, fileType, out parameterCount);
             
-            info.GetParameters().ForEach(p =>
+            info.Parameters.ForEach(p =>
             {
 
             });

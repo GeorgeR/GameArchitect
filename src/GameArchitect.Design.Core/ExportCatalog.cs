@@ -13,16 +13,27 @@ namespace GameArchitect.Design
 {
     public class ExportCatalog : IEnumerable<ITypeInfo>, IEnumerable<Type>, IValidatable
     {
-        private IEnumerable<System.Reflection.Assembly> Assemblies { get; }
-        private IList<ITypeInfo> Types { get; set; }
+        private DefaultMetadataProvider DefaultMetadataProvider { get; }
+        private IEnumerable<System.Reflection.Assembly> Assemblies { get; set; }
+        private IDictionary<Type, IList<ITypeInfo>> Types { get; set; }
 
-        public ExportCatalog(params string[] paths)
+        public ExportCatalog(DefaultMetadataProvider defaultMetadataProvider)
+        {
+            DefaultMetadataProvider = defaultMetadataProvider;
+
+            Types = new Dictionary<Type, IList<ITypeInfo>>
+            {
+                {defaultMetadataProvider.GetType(), new List<ITypeInfo>()}
+            };
+        }
+
+        public void FindInAssemblies(params string[] paths)
         {
             var a = new List<System.Reflection.Assembly>();
 
             paths.ForEach(p =>
             {
-                if(File.Exists(p))
+                if (File.Exists(p))
                     a.Add(System.Reflection.Assembly.LoadFile(p));
                 else if (Directory.Exists(p))
                     a.AddRange(Directory.GetFiles(p, "*.dll").Select(System.Reflection.Assembly.LoadFile));
@@ -33,9 +44,14 @@ namespace GameArchitect.Design
             Assemblies = a;
         }
 
-        public ExportCatalog(params System.Reflection.Assembly[] assemblies)
+        public void FindInAssemblies(params System.Reflection.Assembly[] assemblies)
         {
             Assemblies = assemblies;
+        }
+
+        public TTypeInfo Get<T, TTypeInfo>() where TTypeInfo : class, ITypeInfo
+        {
+            return (TTypeInfo) Get<T>();
         }
 
         public ITypeInfo Get<T>()
@@ -47,18 +63,22 @@ namespace GameArchitect.Design
             return result;
         }
 
-        private IEnumerable<ITypeInfo> GetTypes()
+        private IEnumerable<ITypeInfo> GetTypes(IMetadataProvider metadataProvider = null)
         {
+            if (metadataProvider == null)
+                metadataProvider = DefaultMetadataProvider;
+
             if (Types == null)
             {
-                Types = new List<ITypeInfo>();
+                if (!Types.ContainsKey(metadataProvider.GetType()))
+                    Types.Add(metadataProvider.GetType(), new List<ITypeInfo>());
 
-                Types.AddRange(Assemblies
+                Types[metadataProvider.GetType()].AddRange(Assemblies
                     .SelectMany(o => o.GetExportedTypes().Where(t => t.HasAttribute<ExportAttribute>()))
-                    .Select(o => new TypeInfo(o)));
+                    .Select(o => metadataProvider.Create<ITypeInfo>(o)));
             }
 
-            return Types;
+            return Types[metadataProvider.GetType()];
         }
 
         IEnumerator<Type> IEnumerable<Type>.GetEnumerator()

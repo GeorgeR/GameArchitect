@@ -7,13 +7,13 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX
 {
     public class CXXConfiguration : ICodeGenerationConfiguration
     {
-        public void Setup(IServiceCollection services)
+        public virtual void Setup(IServiceCollection services)
         {
             services.AddSingleton<ICodeGenerationConfiguration, CXXConfiguration>(o => this);
 
             services.AddSingleton<IMetadataProvider, CXXMetadataProvider>();
-            services.AddSingleton<INameTransformer, INameTransformer>();
-            services.AddSingleton<ITypeTransformer, ITypeTransformer>();
+            services.AddSingleton<INameTransformer, CXXNameTransformer>();
+            services.AddSingleton<ITypeTransformer, CXXTypeTransformer>();
         }
     }
 }

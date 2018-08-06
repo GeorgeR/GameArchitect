@@ -3,9 +3,9 @@ using GameArchitect.Design;
 using GameArchitect.Design.Metadata;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
+namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
 {
-    public class CXXEventPrinter : PrinterBase, ICXXPrinter<EventInfo>
+    public class CXXEventPrinter : PrinterBase, ICXXPrinter<IEventInfo>
     {
         protected virtual ICXXPrinter<IMemberInfo> ParameterPrinter { get; }
 
@@ -19,11 +19,11 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             ParameterPrinter = parameterPrinter;
         }
 
-        public virtual string Print(EventInfo info, CXXFileType fileType)
+        public virtual string Print(IEventInfo info, CXXFileType fileType)
         {
             throw new NotImplementedException();
         }
 
-        public string Print(EventInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
+        public string Print(IEventInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
     }
 }

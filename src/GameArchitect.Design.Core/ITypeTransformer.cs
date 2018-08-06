@@ -5,6 +5,6 @@ namespace GameArchitect.Design
     public interface ITypeTransformer
     {
         string TransformType(IMemberInfo member);
-        string TransformType(TypeInfo type);
+        string TransformType(ITypeInfo type);
     }
 }

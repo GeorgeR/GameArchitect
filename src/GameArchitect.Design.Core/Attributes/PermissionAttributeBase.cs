@@ -15,7 +15,7 @@ namespace GameArchitect.Design.Attributes
         {
             base.IsValid(logger, info);
 
-            ForMeta<PropertyInfo>(info, o =>
+            ForMeta<IPropertyInfo>(info, o =>
             {
                 var permissionAttributes = o.GetAttributes().OfType<PermissionAttributeBase>();
                 if(permissionAttributes.Count() > 1)

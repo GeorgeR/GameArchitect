@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Tasks.Runner"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Tasks.Registration", "GameArchitect.Tasks.Registration\GameArchitect.Tasks.Registration.csproj", "{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameArchitect.Design.CXX", "GameArchitect.Design.CXX\GameArchitect.Design.CXX.csproj", "{91CC4CB2-A4DE-4801-BD1A-A2BE552841CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91CC4CB2-A4DE-4801-BD1A-A2BE552841CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91CC4CB2-A4DE-4801-BD1A-A2BE552841CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91CC4CB2-A4DE-4801-BD1A-A2BE552841CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91CC4CB2-A4DE-4801-BD1A-A2BE552841CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{D3C17EAE-D2E6-45C2-B9C6-97B57EB9FE97} = {0DF2C70F-4B47-4255-ABF8-64D9EAF3CF39}
 		{DB144955-BEEB-4DDF-9E08-0FDB29533CBF} = {A9F46729-A15A-49D7-92AE-F4E93C9E1BA7}
 		{7DA69595-47D6-4F8E-A9B3-DD5F3CEB6DF3} = {A9F46729-A15A-49D7-92AE-F4E93C9E1BA7}
+		{91CC4CB2-A4DE-4801-BD1A-A2BE552841CE} = {0DF2C70F-4B47-4255-ABF8-64D9EAF3CF39}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01952566-DC0A-4D93-92C4-F5B3B4971106}

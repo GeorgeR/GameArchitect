@@ -7,7 +7,7 @@ namespace GameArchitect.Design.Metadata
     {
         public override string TypeName { get; } = "Proxy";
 
-        public ProxyMemberInfo(TypeInfo type, string name) 
+        public ProxyMemberInfo(ITypeInfo type, string name) 
             : base(null, type.Native)
         {
             Name = name;

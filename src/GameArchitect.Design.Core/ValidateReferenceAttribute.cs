@@ -34,7 +34,7 @@ namespace GameArchitect.Design
 
             var obj2 = new TypeInfo(obj);
 
-            var resolvedProperty = obj2.GetProperties()
+            var resolvedProperty = obj2.Properties
                 .FirstOrDefault(o => o.Name.Equals(split[1], StringComparison.CurrentCultureIgnoreCase));
 
             if (resolvedProperty == null)
@@ -56,7 +56,7 @@ namespace GameArchitect.Design
         {
             base.IsValid(logger, info);
 
-            ForMeta<PropertyInfo>(info, propertyInfo =>
+            ForMeta<IPropertyInfo>(info, propertyInfo =>
             {
 
             });

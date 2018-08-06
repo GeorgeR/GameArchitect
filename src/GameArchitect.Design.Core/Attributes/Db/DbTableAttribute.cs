@@ -19,9 +19,9 @@ namespace GameArchitect.Design.Attributes.Db
         {
             base.IsValid(logger, info);
 
-            ForMeta<TypeInfo>(info, o =>
+            ForMeta<ITypeInfo>(info, o =>
             {
-                if (!o.GetProperties().Any(p => p.HasAttribute<DbKeyAttribute>()))
+                if (!o.Properties.Any(p => p.HasAttribute<DbKeyAttribute>()))
                     logger.LogError($"The type {o.GetPath()} has a DbTable attribute but no DbKey was specified.");
             });
 

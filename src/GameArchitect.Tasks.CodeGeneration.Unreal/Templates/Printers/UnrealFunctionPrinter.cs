@@ -4,11 +4,11 @@ using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Tasks.CodeGeneration.CXX;
-using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
+using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
 using Microsoft.Extensions.Logging;
 
-namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
+namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {
     public class UnrealFunctionPrinter : CXXFunctionPrinter
     {
@@ -19,7 +19,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
             ICXXPrinter<IMemberInfo> parameterPrinter) 
             : base(log, nameTransformer, typeTransformer, parameterPrinter) { }
 
-        public override string Print(FunctionInfo info, CXXFileType fileType)
+        public override string Print(IFunctionInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
@@ -28,7 +28,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 
             info.ForAttribute<AsyncAttribute>(attr =>
             {
-                parameterStr += $", TFunction<void({(info.Type != typeof(void) ? returnTypeStr : string.Empty)})> Callback";
+                parameterStr += $", TFunction<void({(info.Type.Native != typeof(void) ? returnTypeStr : string.Empty)})> Callback";
                 returnTypeStr = "void";
             });
             

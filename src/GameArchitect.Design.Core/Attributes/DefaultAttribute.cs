@@ -31,7 +31,7 @@ namespace GameArchitect.Design.Attributes
         {
             base.IsValid(logger, info);
 
-            ForMeta<PropertyInfo>(info, o =>
+            ForMeta<IPropertyInfo>(info, o =>
             {
                 if (o.Type.Native != Value.GetType())
                     logger.LogError($"A Default attribute (of type {Value.GetType()}) is specified for property {o.GetPath()} which uses an incompatible type ({o.Type.GetPath()}). Ensure the attribute value and property type match.");
