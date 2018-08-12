@@ -5,7 +5,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 {
     public class CXXHeaderFileTemplate : CXXFileTemplate
     {
-        public CXXHeaderFileTemplate(params CXXTypeTemplate[] typeTemplates) : base(typeTemplates) { }
+        public CXXHeaderFileTemplate(params ICXXTypeTemplate[] typeTemplates) : base(typeTemplates) { }
 
         public override string Print()
         {

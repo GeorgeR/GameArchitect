@@ -4,8 +4,10 @@ using GameArchitect.Design.Metadata;
 namespace GameArchitect.Tasks.CodeGeneration
 {
     /* Create and return a template most suited to the input metadata */
-    public interface ITemplateFactory : IServiceConfiguration
+    public interface ITemplateFactory<in TTypeInfo> : IServiceConfiguration
+        where TTypeInfo : class, ITypeInfo
     {
-        ITemplate Create(ITypeInfo typeInfo);
+        TTemplate Create<TTemplate>(TTypeInfo typeInfo) where TTemplate : ITemplate;
+        ITemplate Create(TTypeInfo typeInfo);
     }
 }

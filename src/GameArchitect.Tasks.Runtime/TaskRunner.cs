@@ -38,7 +38,9 @@ namespace GameArchitect.Tasks.Runtime
                 ServiceCollection.AddSingleton(options);
                 ServiceCollection.AddSingleton(typeof(ITaskOptions), options);
             }
-            
+            else
+                ServiceCollection.AddSingleton<ITaskOptions, EmptyTaskOptions>();
+
             if (task.ParameterType != null)
             {
                 ServiceCollection.AddSingleton(task.ParameterType);
@@ -50,6 +52,7 @@ namespace GameArchitect.Tasks.Runtime
             
             var taskParameterType = task.ParameterType ?? typeof(TaskParameters);
             var parameters = (ITaskParameters) ServiceProvider.GetService(taskParameterType);
+            parameters.PostSetup(ServiceProvider);
 
             return await task.Run(parameters);
         }

@@ -8,7 +8,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
 {
     public class UnrealTypeTransformer : CXXTypeTransformer
     {
-        public UnrealTypeTransformer(INameTransformer nameTransformer) 
+        public UnrealTypeTransformer(UnrealNameTransformer nameTransformer) 
             : base(nameTransformer) { }
 
         public override string TransformType(IMemberInfo member)

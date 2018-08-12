@@ -14,14 +14,15 @@ namespace SomeGame.Tasks.EntityFramework
     [Export(typeof(ITaskParameters))]
     public class DbParameters : TaskParameters
     {
-        public DbParameters() { }
-
         public DbParameters(
             IServiceProvider serviceProvider,
-            ILogger<ITaskParameters> logger, 
-            ExportCatalog exports, 
-            ITaskOptions options) 
-            : base(serviceProvider, logger, exports, options) { }
+            ILogger<ITaskParameters> logger,
+            ExportCatalog exports,
+            ITaskOptions options)
+            : base(serviceProvider, logger, exports, options)
+        {
+            var x = 123;
+        }
 
         public override void Setup(IServiceCollection services)
         {

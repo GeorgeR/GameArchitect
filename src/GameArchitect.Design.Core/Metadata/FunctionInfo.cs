@@ -45,11 +45,11 @@ namespace GameArchitect.Design.Metadata
                     return _parameters;
 
                 _parameters = new List<IParameterInfo>();
-                _parameters.AddRange(
-                    Native
-                        .GetParameters()
-                        .Select(o => MetadataProvider.Create(this, DeclaringType, o)));
-
+                Native
+                    .GetParameters()
+                    .Select(o => MetadataProvider.Create(this, DeclaringType, o))
+                    .ForEach(o => _parameters.Add(o));
+                
                 return _parameters;
             }
         }

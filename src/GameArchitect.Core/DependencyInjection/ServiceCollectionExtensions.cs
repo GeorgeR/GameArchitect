@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.Composition.Hosting;
 using System.Linq;
 using System.Reflection;
 using GameArchitect.Extensions;
@@ -18,14 +17,17 @@ namespace GameArchitect.DependencyInjection
 
         public static void AddConfigurations(this IServiceCollection source, params Assembly[] assemblies)
         {
+            //var provider = source.BuildServiceProvider();
             var serviceConfigurations = assemblies.SelectMany(o =>
                 o.GetTypes().Where(_ => typeof(IServiceConfiguration).IsAssignableFrom(_))
                     .Select(_ =>
                     {
-                        if(_.GetConstructors().All(c => c.GetParameters().Length != 0))
-                            throw new MissingMethodException($"The type {_.Name} doesn't contain a parameterless constructor.");
+                        var constructor = _.GetConstructors().FirstOrDefault();
+                        var parameters = new object[constructor.GetParameters().Length];
 
-                        return (IServiceConfiguration) Activator.CreateInstance(_);
+                        var result = (IServiceConfiguration)Activator.CreateInstance(_, parameters);
+
+                        return result;
                     }));
 
             serviceConfigurations.ForEach(o => o.Setup(source));

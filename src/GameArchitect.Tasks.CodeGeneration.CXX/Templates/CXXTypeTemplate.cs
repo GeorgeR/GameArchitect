@@ -14,7 +14,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
         private CXXEventPrinter EventPrinter { get; }
         private CXXFunctionPrinter FunctionPrinter { get; }
 
-        public Dictionary<CXXFileType, HashSet<string>> Includes { get; } =
+        public IDictionary<CXXFileType, HashSet<string>> Includes { get; } =
             new Dictionary<CXXFileType, HashSet<string>>
             {
                 {CXXFileType.Declaration, new HashSet<string>()},

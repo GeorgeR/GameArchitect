@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using GameArchitect.Tasks;
 using GameArchitect.Tasks.Runner;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -19,13 +17,10 @@ namespace GameArchitect.Tests
         [TestInitialize]
         public void Setup()
         {
-            var location = Path.Combine(Assembly.GetExecutingAssembly().Location, "../../../../../");
-
-            var resolver = new AssemblyResolver(location);
-            AssemblyLoadContext.Default.Resolving += resolver.Resolve;
+            var loader = new AssemblyLoader();
         }
 
-        [TestMethod]
+        [TestMethod]        
         public void Can_Scan()
         {
             var taskAssembly = typeof(DbTask).Assembly;

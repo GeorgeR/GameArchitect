@@ -16,20 +16,20 @@
       <Private></Private>
     </ProjectReference>
     <ProjectReference Include="..\SomeGame.Design.Data\SomeGame.Design.Data.csproj">
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <Private></Private>
+      <CopyLocalSatelliteAssemblies></CopyLocalSatelliteAssemblies>
     </ProjectReference>
     <ProjectReference Include="..\SomeGame.Tasks.CodeGeneration.Unreal\SomeGame.Tasks.CodeGeneration.Unreal.csproj">
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <Private></Private>
+      <CopyLocalSatelliteAssemblies></CopyLocalSatelliteAssemblies>
     </ProjectReference>
     <ProjectReference Include="..\SomeGame.Tasks.Empty\SomeGame.Tasks.Empty.csproj">
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <Private></Private>
+      <CopyLocalSatelliteAssemblies></CopyLocalSatelliteAssemblies>
     </ProjectReference>
     <ProjectReference Include="..\SomeGame.Tasks.EntityFramework\SomeGame.Tasks.EntityFramework.csproj">
-      <Private>false</Private>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <Private></Private>
+      <CopyLocalSatelliteAssemblies></CopyLocalSatelliteAssemblies>
     </ProjectReference>
   </ItemGroup>
 

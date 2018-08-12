@@ -14,6 +14,8 @@ namespace GameArchitect.Tasks
 
         T GetService<T>();
         TOptions GetOptions<TOptions>() where TOptions : ITaskOptions;
+
+        void PostSetup(IServiceProvider serviceProvider);
     }
 
     public class TaskParameters : ITaskParameters, IValidatable
@@ -24,8 +26,6 @@ namespace GameArchitect.Tasks
         
         public ExportCatalog Exports { get; }
         public ITaskOptions Options { get; }
-
-        public TaskParameters() { }
 
         public TaskParameters(
             IServiceProvider serviceProvider,
@@ -42,6 +42,7 @@ namespace GameArchitect.Tasks
         }
 
         public virtual void Setup(IServiceCollection services) { }
+        public virtual void PostSetup(IServiceProvider serviceProvider) { }
 
         public T GetService<T>()
         {

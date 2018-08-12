@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using GameArchitect.DependencyInjection;
 using GameArchitect.Design;
+using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Tasks;
 using GameArchitect.Tasks.CodeGeneration.Unreal;
 using GameArchitect.Tasks.CodeGeneration.Unreal.Templates;
@@ -16,8 +17,6 @@ namespace SomeGame.Tasks.CodeGeneration.Unreal
     [Export(typeof(ITaskParameters))]
     public class UnrealParameters : TaskParameters
     {
-        public UnrealParameters() { }
-
         public UnrealParameters(
             IServiceProvider serviceProvider,
             ILogger<ITaskParameters> logger, 
@@ -30,6 +29,13 @@ namespace SomeGame.Tasks.CodeGeneration.Unreal
             base.Setup(services);
             
             services.AddConfigurations(typeof(UnrealConfiguration).Assembly);
+        }
+
+        public override void PostSetup(IServiceProvider serviceProvider)
+        {
+            base.PostSetup(serviceProvider);
+
+            Exports.RegisterMetadataProvider(serviceProvider.GetService<UnrealMetadataProvider>());
         }
     }
 
@@ -44,10 +50,10 @@ namespace SomeGame.Tasks.CodeGeneration.Unreal
 
         public async Task<bool> Run(ITaskParameters parameters)
         {
-            var playerType = parameters.Exports.Get<Player>();
+            var playerType = parameters.Exports.Get<Player, UnrealMetadataProvider, UnrealTypeInfo>();
 
             var templateFactory = parameters.GetService<UnrealTemplateFactory>();
-            var template = templateFactory.Create(playerType) as UnrealTypeTemplate;
+            var template = templateFactory.Create<UnrealClassTemplate>(playerType);
             template.ModuleName = "SomeGame";
 
             const string filePath = @"C:\Temp\Out.txt";

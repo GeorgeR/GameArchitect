@@ -8,9 +8,9 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 {
     public abstract class CXXFileTemplate : ITemplate
     {
-        protected IList<CXXTypeTemplate> TypeTemplates { get; }
+        protected IList<ICXXTypeTemplate> TypeTemplates { get; }
 
-        protected CXXFileTemplate(params CXXTypeTemplate[] typeTemplates)
+        protected CXXFileTemplate(params ICXXTypeTemplate[] typeTemplates)
         {
             TypeTemplates = typeTemplates;
         }

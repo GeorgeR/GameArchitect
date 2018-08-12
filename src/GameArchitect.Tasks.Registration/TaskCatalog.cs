@@ -19,6 +19,7 @@ namespace GameArchitect.Tasks.Registration
 
         private ILogger<TaskCatalog> Log { get; }
 
+        private AssemblyLoader Loader { get; set; }
         private TaskComparer TaskComparer { get; set; }
 
         private readonly IDictionary<string, ITask> _tasks = new Dictionary<string, ITask>();
@@ -36,6 +37,7 @@ namespace GameArchitect.Tasks.Registration
         public TaskCatalog(ILogger<TaskCatalog> logger)
         {
             Log = logger;
+            Loader = new AssemblyLoader(AppDomain.CurrentDomain);
         }
 
         public bool HasNamedTask(string taskName)
@@ -78,7 +80,7 @@ namespace GameArchitect.Tasks.Registration
             {
                 if (File.Exists(o))
                 {
-                    var assembly = Assembly.LoadFile(o);
+                    var assembly = Loader.GetOrLoadAssembly(o);
                     var assemblyCatalog = new AssemblyCatalog(assembly);
                     catalog.Catalogs.Add(assemblyCatalog);
 

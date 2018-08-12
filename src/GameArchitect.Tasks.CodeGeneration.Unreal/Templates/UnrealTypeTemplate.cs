@@ -10,7 +10,7 @@ using GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 {
-    public class UnrealTypeTemplate : ICXXTemplate
+    public class UnrealTypeTemplate : ICXXTypeTemplate
     {
         public string ModuleName { get; set; }
 
@@ -18,7 +18,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
         protected UnrealEventPrinter EventPrinter { get; }
         protected UnrealFunctionPrinter FunctionPrinter { get; }
 
-        public Dictionary<CXXFileType, HashSet<string>> Includes { get; } =
+        public IDictionary<CXXFileType, HashSet<string>> Includes { get; } =
             new Dictionary<CXXFileType, HashSet<string>>
             {
                 {CXXFileType.Declaration, new HashSet<string>()},

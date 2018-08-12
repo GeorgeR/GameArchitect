@@ -8,14 +8,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal
 {
-    public class UnrealTemplateFactory : ITemplateFactory
+    public class UnrealTemplateFactory : ITemplateFactory<UnrealTypeInfo>
     {
+        private IServiceProvider ServiceProvider { get; }
         private UnrealMetadataProvider MetadataProvider { get; }
 
-        public UnrealTemplateFactory() { }
-
-        public UnrealTemplateFactory(UnrealMetadataProvider metadataProvider)
+        public UnrealTemplateFactory(IServiceProvider serviceProvider, UnrealMetadataProvider metadataProvider)
         {
+            ServiceProvider = serviceProvider;
             MetadataProvider = metadataProvider;
         }
 
@@ -25,7 +25,13 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
             services.AddTransient<UnrealClassTemplate>();
         }
 
-        public ITemplate Create(ITypeInfo typeInfo)
+        public TTemplate Create<TTemplate>(UnrealTypeInfo typeInfo) 
+            where TTemplate : ITemplate
+        {
+            return ActivatorUtilities.CreateInstance<TTemplate>(ServiceProvider, typeInfo);
+        }
+
+        public ITemplate Create(UnrealTypeInfo typeInfo)
         {
             if (typeInfo.HasAttribute<UnrealStructAttribute>())
                 return CreateForStruct(typeInfo);

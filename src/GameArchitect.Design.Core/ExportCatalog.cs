@@ -69,7 +69,11 @@ namespace GameArchitect.Design
             where TProvider : class, IMetadataProvider
             where TTypeInfo : class, ITypeInfo
         {
-            var result = GetTypes<TProvider>().FirstOrDefault(o => o.Native.AssemblyQualifiedName.Equals(typeof(T).AssemblyQualifiedName));
+            if (Assemblies == null || !Assemblies.Any())
+                throw new Exception($"No assemblies specified for ExportCatalog.");
+
+            var types = GetTypes<TProvider>();
+            var result = types.FirstOrDefault(o => o.Native.AssemblyQualifiedName.Equals(typeof(T).AssemblyQualifiedName));
             if (result == null)
                 throw new NullReferenceException($"Tried to get type {typeof(T).Name} from ExportCatalog but it was not found.");
 

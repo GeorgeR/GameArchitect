@@ -35,13 +35,19 @@ namespace GameArchitect.Tasks.Runner
 
         public Application(Options options)
         {
+            var entityPaths = options.EntityPaths.Split(',');
+
             var services = new ServiceCollection();
             services.AddConfigurations(typeof(Application).Assembly);
+            services.AddSingleton(p =>
+            {
+                var result = new ExportCatalog(p.GetService<DefaultMetadataProvider>());
+                result.FindInAssemblies(entityPaths);
+                return result;
+            });
 
             var serviceProvider = services.BuildServiceProvider();
-            var entityPaths = options.EntityPaths.Split(',');
             var exportCatalog = serviceProvider.GetService<ExportCatalog>();
-            exportCatalog.FindInAssemblies(entityPaths);
 
             Log = serviceProvider.GetService<ILogger<Application>>();
             Log.LogInformation($"{exportCatalog.ToList<Type>().Count} entities found in {entityPaths.FirstOrDefault()}.");

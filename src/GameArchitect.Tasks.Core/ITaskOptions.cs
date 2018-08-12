@@ -4,4 +4,9 @@
     {
 
     }
+
+    public class EmptyTaskOptions : ITaskOptions
+    {
+
+    }
 }

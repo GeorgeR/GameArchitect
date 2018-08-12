@@ -1,12 +1,10 @@
 ﻿using System.Text;
 using GameArchitect.Design;
-using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
 using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Tasks.CodeGeneration.CXX;
 using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
-using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {

@@ -11,7 +11,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
     {
         private string GeneratedHeaderName { get; set; }
 
-        public UnrealHeaderTemplate(params UnrealTypeTemplate[] typeTemplates) : base(typeTemplates.Cast<CXXTypeTemplate>().ToArray()) { }
+        public UnrealHeaderTemplate(params UnrealTypeTemplate[] typeTemplates) : base(typeTemplates.Cast<ICXXTypeTemplate>().ToArray()) { }
 
         public void AddGeneratedHeaderInclude(string filePath)
         {

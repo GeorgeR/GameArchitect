@@ -94,11 +94,13 @@ namespace GameArchitect.Design.Metadata
                     return _properties;
 
                 _properties = new List<IPropertyInfo>();
-                _properties.AddRange(
-                    Native
-                        .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                        .Select(o => MetadataProvider.Create(this, o)));
-
+                Native.GetProperties(BindingFlags.Public
+                                     | BindingFlags.NonPublic
+                                     | BindingFlags.Instance
+                                     | BindingFlags.Static)
+                    .Select(o => MetadataProvider.Create(this, o))
+                    .ForEach(o => _properties.Add(o));
+                
                 // Fields not supported for now
                 //result = result.Join(
                 //    Native
@@ -119,11 +121,11 @@ namespace GameArchitect.Design.Metadata
                     return _events;
 
                 _events = new List<IEventInfo>();
-                _events.AddRange(
-                    Native
-                        .GetEvents(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                        .Select(o => MetadataProvider.Create(this, o)));
-
+                Native
+                    .GetEvents(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                    .Select(o => MetadataProvider.Create(this, o))
+                    .ForEach(o => _events.Add(o));
+                
                 return _events;
             }
         }
@@ -140,13 +142,13 @@ namespace GameArchitect.Design.Metadata
                 var baseFunctions = new[] { "ToString", "Equals", "GetHashCode", "GetType", "Finalize", "MemberwiseClone" };
 
                 _functions = new List<IFunctionInfo>();
-                _functions.AddRange(
-                    Native
-                        .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                        .Where(o => !o.IsSpecialName) // Excludes property accessors
-                        .Where(o => !baseFunctions.Contains(o.Name)) // Exclude base methods
-                        .Select(o => MetadataProvider.Create(this, o)));
-
+                Native
+                    .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
+                    .Where(o => !o.IsSpecialName) // Excludes property accessors
+                    .Where(o => !baseFunctions.Contains(o.Name)) // Exclude base methods
+                    .Select(o => MetadataProvider.Create(this, o))
+                    .ForEach(o => _functions.Add(o));
+                
                 return _functions;
             }
         }
