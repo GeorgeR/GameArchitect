@@ -1,9 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using GameArchitect.DependencyInjection;
 
 namespace GameArchitect.Tasks.CodeGeneration
 {
-    public interface ICodeGenerationConfiguration
+    public interface ICodeGenerationConfiguration : IServiceConfiguration
     {
-        void Setup(IServiceCollection services);
     }
 }

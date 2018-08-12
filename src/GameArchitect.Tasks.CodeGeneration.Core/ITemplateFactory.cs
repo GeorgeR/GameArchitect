@@ -1,13 +1,11 @@
-﻿using GameArchitect.Design.Metadata;
-using Microsoft.Extensions.DependencyInjection;
+﻿using GameArchitect.DependencyInjection;
+using GameArchitect.Design.Metadata;
 
 namespace GameArchitect.Tasks.CodeGeneration
 {
     /* Create and return a template most suited to the input metadata */
-    public interface ITemplateFactory
+    public interface ITemplateFactory : IServiceConfiguration
     {
-        void Setup(IServiceCollection services);
-
         ITemplate Create(ITypeInfo typeInfo);
     }
 }

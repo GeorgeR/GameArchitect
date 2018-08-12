@@ -8,4 +8,8 @@
     <ProjectReference Include="..\..\src\GameArchitect.Tasks.Core\GameArchitect.Tasks.Core.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
 </Project>

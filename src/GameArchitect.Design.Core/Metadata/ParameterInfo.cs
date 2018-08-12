@@ -9,19 +9,20 @@ namespace GameArchitect.Design.Metadata
         IMemberInfo DeclaringMember { get; }
     }
 
-    public class ParameterInfo : MemberInfoBase<System.Reflection.ParameterInfo>, IParameterInfo
+    public abstract class ParameterInfoBase<TTypeInfo> 
+        : MemberInfoBase<TTypeInfo, System.Reflection.ParameterInfo>, 
+        IParameterInfo
+        where TTypeInfo : class, ITypeInfo
     {
-        public override string TypeName { get; } = "Parameter";
-
         public IMemberInfo DeclaringMember { get; }
 
-        public ParameterInfo(IMemberInfo declaringMember, ITypeInfo declaringType, System.Reflection.ParameterInfo native) 
-            : base(declaringType, native)
+        protected ParameterInfoBase(IMetadataProvider metadataProvider, IMemberInfo declaringMember, TTypeInfo declaringType, System.Reflection.ParameterInfo native)
+            : base(metadataProvider, declaringType, native)
         {
             DeclaringMember = declaringMember;
 
-            Name = Native.Name;
-            Type = ResolveType(Native.ParameterType, Native);
+            Name = native.Name;
+            Type = ResolveType(Native.ParameterType, native);
         }
 
         public override string GetPath()
@@ -37,5 +38,11 @@ namespace GameArchitect.Design.Metadata
                        .Cast<IDelegatedValidatable>()
                        .All(a => a.IsValid(logger, this));
         }
+    }
+
+    public sealed class ParameterInfo : ParameterInfoBase<TypeInfo>
+    {
+        public ParameterInfo(IMetadataProvider metadataProvider, IMemberInfo declaringMember, TypeInfo declaringType, System.Reflection.ParameterInfo native) 
+            : base(metadataProvider, declaringMember, declaringType, native) { }
     }
 }

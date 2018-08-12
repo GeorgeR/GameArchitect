@@ -1,27 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using GameArchitect.Design;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
+using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.CXX;
 using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
-using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {
-    public class UnrealEventPrinter : CXXEventPrinter
+    public class UnrealEventPrinter : ICXXPrinter<UnrealEventInfo>
     {
-        public UnrealEventPrinter(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer, 
-            ITypeTransformer typeTransformer,
-            ICXXPrinter<IMemberInfo> parameterPrinter) 
-            : base(log, nameTransformer, typeTransformer, parameterPrinter) { }
+        protected UnrealParameterPrinter ParameterPrinter { get; }
 
-        protected virtual string PrintParameters(IEventInfo info, CXXFileType fileType, out int parameterCount)
+        public UnrealEventPrinter(UnrealParameterPrinter parameterPrinter)
+        {
+            ParameterPrinter = parameterPrinter;
+        }
+
+        protected virtual string PrintParameters(UnrealEventInfo info, CXXFileType fileType, out int parameterCount)
         {
             var sb = new StringBuilder();
 
@@ -49,7 +48,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
             return sb.ToString();
         }
 
-        public override string Print(IEventInfo info, CXXFileType fileType)
+        public string Print(UnrealEventInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
@@ -69,5 +68,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 
             return sb.ToString();
         }
+
+        public string Print(UnrealEventInfo info) { throw new System.NotImplementedException(); }
     }
 }

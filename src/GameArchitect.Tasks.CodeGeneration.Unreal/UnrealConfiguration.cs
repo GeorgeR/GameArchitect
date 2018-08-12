@@ -1,6 +1,4 @@
-﻿using GameArchitect.Design;
-using GameArchitect.Design.Metadata;
-using GameArchitect.Design.Unreal.Metadata;
+﻿using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Tasks.CodeGeneration.CXX;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,11 +10,11 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal
         {
             base.Setup(services);
 
-            services.AddSingleton<ICodeGenerationConfiguration, UnrealConfiguration>(o => this);
+            services.AddSingleton(this);
 
-            services.AddSingleton<IMetadataProvider, UnrealMetadataProvider>();
-            services.AddSingleton<INameTransformer, UnrealNameTransformer>();
-            services.AddSingleton<ITypeTransformer, UnrealTypeTransformer>();
+            services.AddSingleton<UnrealMetadataProvider>();
+            services.AddSingleton<UnrealNameTransformer>();
+            services.AddSingleton<UnrealTypeTransformer>();
         }
     }
 }

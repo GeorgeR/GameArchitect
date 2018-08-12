@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,18 +14,19 @@ namespace GameArchitect.Design
 {
     public class ExportCatalog : IEnumerable<ITypeInfo>, IEnumerable<Type>, IValidatable
     {
-        private DefaultMetadataProvider DefaultMetadataProvider { get; }
         private IEnumerable<System.Reflection.Assembly> Assemblies { get; set; }
-        private IDictionary<Type, IList<ITypeInfo>> Types { get; set; }
+
+        private IList<IMetadataProvider> MetadataProviders { get; } = new List<IMetadataProvider>();
+        private DefaultMetadataProvider DefaultMetadataProvider { get; }
+        
+        private ConcurrentDictionary<Type, IList<ITypeInfo>> Types { get; set; } = new ConcurrentDictionary<Type, IList<ITypeInfo>>();
 
         public ExportCatalog(DefaultMetadataProvider defaultMetadataProvider)
         {
+            MetadataProviders.Add(defaultMetadataProvider);
             DefaultMetadataProvider = defaultMetadataProvider;
 
-            Types = new Dictionary<Type, IList<ITypeInfo>>
-            {
-                {defaultMetadataProvider.GetType(), new List<ITypeInfo>()}
-            };
+            Types.TryAdd(defaultMetadataProvider.GetType(), new List<ITypeInfo>());
         }
 
         public void FindInAssemblies(params string[] paths)
@@ -49,46 +51,59 @@ namespace GameArchitect.Design
             Assemblies = assemblies;
         }
 
-        public TTypeInfo Get<T, TTypeInfo>() where TTypeInfo : class, ITypeInfo
+        public void RegisterMetadataProvider(IMetadataProvider provider)
         {
-            return (TTypeInfo) Get<T>();
+            if(!Types.ContainsKey(provider.GetType()))
+            {
+                MetadataProviders.Add(provider);
+                Types.TryAdd(provider.GetType(), new List<ITypeInfo>());
+            }
         }
 
         public ITypeInfo Get<T>()
         {
-            var result = GetTypes().FirstOrDefault(o => o.Native.AssemblyQualifiedName.Equals(typeof(T).AssemblyQualifiedName));
+            return Get<T, DefaultMetadataProvider, TypeInfo>();
+        }
+
+        public TTypeInfo Get<T, TProvider, TTypeInfo>()
+            where TProvider : class, IMetadataProvider
+            where TTypeInfo : class, ITypeInfo
+        {
+            var result = GetTypes<TProvider>().FirstOrDefault(o => o.Native.AssemblyQualifiedName.Equals(typeof(T).AssemblyQualifiedName));
             if (result == null)
                 throw new NullReferenceException($"Tried to get type {typeof(T).Name} from ExportCatalog but it was not found.");
 
-            return result;
+            return (TTypeInfo) result;
         }
 
-        private IEnumerable<ITypeInfo> GetTypes(IMetadataProvider metadataProvider = null)
+        private IEnumerable<ITypeInfo> GetTypes<TProvider>() where TProvider : class, IMetadataProvider
         {
-            if (metadataProvider == null)
-                metadataProvider = DefaultMetadataProvider;
+            var metadataProviderType = typeof(TProvider);
+            if (!Types.ContainsKey(metadataProviderType))
+                throw new NotImplementedException($"Provider {metadataProviderType.Name} not registered.");
 
-            if (Types == null)
+            var providerTypes = Types[metadataProviderType];
+            if (providerTypes.Count == 0)
             {
-                if (!Types.ContainsKey(metadataProvider.GetType()))
-                    Types.Add(metadataProvider.GetType(), new List<ITypeInfo>());
+                var metadataProvider = MetadataProviders.FirstOrDefault(o => o.GetType() == metadataProviderType);
 
-                Types[metadataProvider.GetType()].AddRange(Assemblies
-                    .SelectMany(o => o.GetExportedTypes().Where(t => t.HasAttribute<ExportAttribute>()))
-                    .Select(o => metadataProvider.Create<ITypeInfo>(o)));
+                var exportedTypes = Assemblies.SelectMany(o => o.GetExportedTypes().Where(t => t.HasAttribute<ExportAttribute>()));
+                var projectedTypes = exportedTypes.Select(o => metadataProvider.Create(o));
+                foreach(var t in projectedTypes)
+                    providerTypes.Add(t);
             }
 
-            return Types[metadataProvider.GetType()];
+            return providerTypes;
         }
 
         IEnumerator<Type> IEnumerable<Type>.GetEnumerator()
         {
-            return GetTypes().Select(o => o.Native).GetEnumerator();
+            return GetTypes<DefaultMetadataProvider>().Select(o => o.Native).GetEnumerator();
         }
 
         public IEnumerator<ITypeInfo> GetEnumerator()
         {
-            return GetTypes().GetEnumerator();
+            return GetTypes<DefaultMetadataProvider>().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -98,7 +113,7 @@ namespace GameArchitect.Design
 
         public bool IsValid(ILogger<IValidatable> logger)
         {
-            return GetTypes().All(o => o.IsValid(logger));
+            return GetTypes<DefaultMetadataProvider>().All(o => o.IsValid(logger));
         }
     }
 }

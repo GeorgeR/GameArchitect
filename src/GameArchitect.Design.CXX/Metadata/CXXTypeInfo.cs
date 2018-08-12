@@ -3,10 +3,9 @@ using GameArchitect.Design.Metadata;
 
 namespace GameArchitect.Design.CXX.Metadata
 {
-    public class CXXTypeInfo : TypeInfo
+    public sealed class CXXTypeInfo : TypeInfoBase<CXXTypeInfo, CXXPropertyInfo, CXXEventInfo, CXXFunctionInfo>
     {
-        public bool AsBaseClass { get; protected set; }
-
-        public CXXTypeInfo(Type native) : base(native) { }
+        public CXXTypeInfo(CXXMetadataProvider metadataProvider, Type native) 
+            : base(metadataProvider, native) { }
     }
 }

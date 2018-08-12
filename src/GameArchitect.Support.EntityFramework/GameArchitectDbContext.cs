@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using GameArchitect.Design.Attributes;
+using GameArchitect.Design.Metadata;
 using GameArchitect.Extensions.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -12,6 +13,13 @@ namespace GameArchitect.Support.EntityFramework
 {
     public abstract class GameArchitectDbContextBase : DbContext
     {
+        private IMetadataProvider MetadataProvider { get; }
+
+        protected GameArchitectDbContextBase(IMetadataProvider metadataProvider)
+        {
+            MetadataProvider = metadataProvider;
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -27,7 +35,7 @@ namespace GameArchitect.Support.EntityFramework
             {
                 var applyConcreteMethod = applyGenericMethod.MakeGenericMethod(entityType);
                 var configurationInstance = Activator.CreateInstance(
-                    configurationGenericType.MakeGenericType(entityType), typeMappingSource);
+                    configurationGenericType.MakeGenericType(entityType), MetadataProvider, typeMappingSource);
 
                 configs.Add(new Tuple<MethodInfo, object>(applyConcreteMethod, configurationInstance));                
             }

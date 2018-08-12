@@ -1,15 +1,19 @@
-﻿using GameArchitect.Design;
+﻿using GameArchitect.Design.Metadata;
+using GameArchitect.Tasks.CodeGeneration.CXX;
 using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
-using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {
-    internal class UnrealParameterPrinter : CXXParameterPrinter
+    public class UnrealParameterPrinter : ICXXPrinter<IMemberInfo>
     {
-        public UnrealParameterPrinter(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer, 
-            ITypeTransformer typeTransformer) 
-            : base(log, nameTransformer, typeTransformer) { }
+        public string Print(IMemberInfo info, CXXFileType fileType)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string Print(IMemberInfo info)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

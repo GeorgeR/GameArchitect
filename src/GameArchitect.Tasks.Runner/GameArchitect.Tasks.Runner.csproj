@@ -3,11 +3,11 @@
   <PropertyGroup>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netstandard2.0;netcoreapp2.1</TargetFrameworks>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <Authors>George Rolfe</Authors>
     <Company>Barking Chimp</Company>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.3.58</Version>
+    <Version>1.3.161</Version>
     <AssemblyVersion>1.3.1.0</AssemblyVersion>
   </PropertyGroup>
 
@@ -46,6 +46,12 @@
   <ItemGroup>
     <ProjectReference Include="..\GameArchitect.Tasks.Registration\GameArchitect.Tasks.Registration.csproj" />
     <ProjectReference Include="..\GameArchitect.Tasks.Runtime\GameArchitect.Tasks.Runtime.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection">
+      <HintPath>C:\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.dependencyinjection\2.1.1\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

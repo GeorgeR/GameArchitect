@@ -1,6 +1,6 @@
-﻿using GameArchitect.Support.EntityFramework;
+﻿using GameArchitect.Design.Metadata;
+using GameArchitect.Support.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using SomeGame.Design.Data;
 
 namespace SomeGame.Tasks.EntityFramework
@@ -12,7 +12,8 @@ namespace SomeGame.Tasks.EntityFramework
         public DbSet<ReferencedItem> ReferencedItems { get; set; }
         public DbSet<Player> Players { get; set; }
 
-        public SomeGameDbContext(string connectionString)
+        public SomeGameDbContext(IMetadataProvider metadataProvider, string connectionString)
+            : base(metadataProvider)
         {
             ConnectionString = connectionString;
         }

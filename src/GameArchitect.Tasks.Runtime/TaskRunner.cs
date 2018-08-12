@@ -1,35 +1,53 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GameArchitect.DependencyInjection;
 using GameArchitect.Design;
+using GameArchitect.Design.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GameArchitect.Tasks.Runtime
 {
-    public sealed class TaskRunner
+    public sealed class TaskRunner : IServiceConfiguration
     {
-        private IServiceCollection Services { get; }
+        private IServiceCollection ServiceCollection { get; }
         private IServiceProvider ServiceProvider { get; set; }
 
+        public TaskRunner() { }
+        
         public TaskRunner(IServiceCollection services = null)
         {
-            Console.WriteLine(services);
-            Services = services ?? new ServiceCollection();
-            Services.AddSingleton(provider => Services);
-            Services.AddScoped<ITaskParameters, TaskParameters>();
-            Services.AddScoped<TaskParameters>();
-            //Services.AddLogging();
+            ServiceCollection = services ?? new ServiceCollection();
+            ServiceCollection.AddConfigurations(typeof(TaskRunner).Assembly);
+            ServiceProvider = ServiceCollection.BuildServiceProvider();
+        }
 
-            ServiceProvider = Services.BuildServiceProvider();
+        public void Setup(IServiceCollection services)
+        {
+            services.AddSingleton<DefaultMetadataProvider>();
+            services.AddSingleton<IMetadataProvider>(provider => provider.GetService<DefaultMetadataProvider>());
+            services.AddScoped<ITaskParameters, TaskParameters>();
+            services.AddScoped<TaskParameters>();
+            services.AddConfigurations();
+            services.AddLogging();
         }
 
         public async Task<bool> Run(ITask task, ExportCatalog exports, ITaskOptions options)
         {
-            //if(options == null)
-            //    Console.WriteLine("Options provided to Task.Run was null.");
-
-            Services.AddScoped(typeof(ITaskOptions), provider => options);
-            ServiceProvider = Services.BuildServiceProvider();
-
+            if (options != null)
+            {
+                ServiceCollection.AddSingleton(options);
+                ServiceCollection.AddSingleton(typeof(ITaskOptions), options);
+            }
+            
+            if (task.ParameterType != null)
+            {
+                ServiceCollection.AddSingleton(task.ParameterType);
+                ServiceCollection.AddSingleton(typeof(ITaskParameters), task.ParameterType);
+            }
+            
+            ServiceCollection.AddConfigurations(task.GetType().Assembly);
+            ServiceProvider = ServiceCollection.BuildServiceProvider();
+            
             var taskParameterType = task.ParameterType ?? typeof(TaskParameters);
             var parameters = (ITaskParameters) ServiceProvider.GetService(taskParameterType);
 

@@ -1,65 +1,45 @@
 ﻿using System;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace GameArchitect.Design.Metadata
 {
-    public class DefaultMetadataProvider : MetadataProviderBase
+    public sealed class DefaultMetadataProvider 
+        : MetadataProviderBase<TypeInfo, PropertyInfo, EventInfo, FunctionInfo, ParameterInfo>
     {
-        public DefaultMetadataProvider(
-            ILoggerFactory logFactory, 
-            INameTransformer nameTransformer,
-            ITypeTransformer typeTransformer) 
-            : base(logFactory, nameTransformer, typeTransformer) { }
+        public DefaultMetadataProvider(IServiceProvider container) 
+            : base(container) { }
 
-        //public override ITypeInfo Create(Type type)
-        //{
-        //    return new TypeInfo(type);
-        //}
-
-        //public override IPropertyInfo Create(ITypeInfo declaringType, System.Reflection.PropertyInfo propertyInfo)
-        //{
-        //    return new PropertyInfo(declaringType, propertyInfo);
-        //}
-
-        //public override IEventInfo Create(ITypeInfo declaringType, System.Reflection.EventInfo eventInfo)
-        //{
-        //    return new EventInfo(declaringType, eventInfo);
-        //}
-
-        //public override IFunctionInfo Create(ITypeInfo declaringType, MethodInfo methodInfo)
-        //{
-        //    return new FunctionInfo(declaringType, methodInfo);
-        //}
-
-        //public override IParameterInfo Create(IMemberInfo declaringMember, ITypeInfo declaringType, System.Reflection.ParameterInfo parameterInfo)
-        //{
-        //    return new ParameterInfo(declaringMember, declaringType, parameterInfo);
-        //}
-
-        public override TTypeInfo Create<TTypeInfo>(Type type)
+        public override void Setup(IServiceCollection services)
         {
-            return new TypeInfo(type) as TTypeInfo;
+            base.Setup(services);
+
+            services.AddSingleton<IMetadataProvider, DefaultMetadataProvider>();
         }
 
-        public override TPropertyInfo Create<TPropertyInfo>(ITypeInfo declaringType, System.Reflection.PropertyInfo propertyInfo)
+        public override TypeInfo Create(Type type)
         {
-            return new PropertyInfo(declaringType, propertyInfo) as TPropertyInfo;
+            return TypeCache.GetOrAdd(type, t => new TypeInfo(this, t));
         }
 
-        public override TEventInfo Create<TEventInfo>(ITypeInfo declaringType, System.Reflection.EventInfo eventInfo)
+        public override PropertyInfo Create(TypeInfo declaringType, System.Reflection.PropertyInfo propertyInfo)
         {
-            return new EventInfo(declaringType, eventInfo) as TEventInfo;
+            return PropertyCache.GetOrAdd(propertyInfo, p => new PropertyInfo(this, declaringType, p));
         }
 
-        public override TFunctionInfo Create<TFunctionInfo>(ITypeInfo declaringType, MethodInfo methodInfo)
+        public override EventInfo Create(TypeInfo declaringType, System.Reflection.EventInfo eventInfo)
         {
-            return new FunctionInfo(declaringType, methodInfo) as TFunctionInfo;
+            return EventCache.GetOrAdd(eventInfo, e => new EventInfo(this, declaringType, e));
         }
 
-        public override TParameterInfo Create<TParameterInfo>(IMemberInfo declaringMember, ITypeInfo declaringType, System.Reflection.ParameterInfo parameterInfo)
+        public override FunctionInfo Create(TypeInfo declaringType, MethodInfo methodInfo)
         {
-            return new ParameterInfo(declaringMember, declaringType, parameterInfo) as TParameterInfo;
+            return FunctionCache.GetOrAdd(methodInfo, m => new FunctionInfo(this, declaringType, m));
+        }
+
+        public override ParameterInfo Create(IMemberInfo declaringMember, TypeInfo declaringType, System.Reflection.ParameterInfo parameterInfo)
+        {
+            return ParameterCache.GetOrAdd(parameterInfo, p => new ParameterInfo(this, declaringMember, declaringType, p));
         }
     }
 }

@@ -3,9 +3,9 @@ using GameArchitect.Design.Metadata;
 
 namespace GameArchitect.Tasks.CodeGeneration.CSharp.Templates
 {
-    internal class PropertyPrinter : IPrinter<PropertyInfo>
+    public class CSharpEventPrinter : IPrinter<EventInfo>
     {
-        public string Print(PropertyInfo info)
+        public string Print(EventInfo info)
         {
             throw new NotImplementedException();
         }

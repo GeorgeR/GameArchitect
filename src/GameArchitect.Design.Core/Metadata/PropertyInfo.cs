@@ -12,16 +12,16 @@ namespace GameArchitect.Design.Metadata
     {
         IEnumerable<IMemberInfo> Deconstruct();
     }
-
-    public class PropertyInfo : MemberInfoBase<System.Reflection.PropertyInfo>, IPropertyInfo
+    
+    public abstract class PropertyInfoBase<TTypeInfo> 
+        : MemberInfoBase<TTypeInfo, System.Reflection.PropertyInfo>, IPropertyInfo
+        where TTypeInfo : class, ITypeInfo
     {
-        public override string TypeName => "Property";
-
-        public PropertyInfo(ITypeInfo declaringType, System.Reflection.PropertyInfo native)
-            : base(declaringType, native)
+        protected PropertyInfoBase(IMetadataProvider metadataProvider, TTypeInfo declaringType, System.Reflection.PropertyInfo native)
+            : base(metadataProvider, declaringType, native)
         {
-            Name = Native.Name;
-            Type = ResolveType(Native.PropertyType, Native);
+            Name = native.Name;
+            Type = ResolveType(native.PropertyType, native);
 
             if (native.CanWrite)
             {
@@ -58,5 +58,11 @@ namespace GameArchitect.Design.Metadata
                        .Cast<IDelegatedValidatable>()
                        .All(a => a.IsValid(logger, this));
         }
+    }
+
+    public sealed class PropertyInfo : PropertyInfoBase<TypeInfo>
+    {
+        public PropertyInfo(IMetadataProvider metadataProvider, TypeInfo declaringType, System.Reflection.PropertyInfo native) 
+            : base(metadataProvider, declaringType, native) { }
     }
 }

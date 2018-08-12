@@ -10,9 +10,19 @@ namespace GameArchitect.Tasks.CodeGeneration.CSharp.Templates
         public HashSet<string> Usings { get; } = new HashSet<string>();
         public string Namespace { get; private set; }
 
-        internal PropertyPrinter PropertyPrinter { get; } = new PropertyPrinter();
-        internal EventPrinter EventPrinter { get; } = new EventPrinter();
-        internal FunctionPrinter FunctionPrinter { get; } = new FunctionPrinter();
+        protected CSharpPropertyPrinter CSharpPropertyPrinter { get; }
+        protected CSharpEventPrinter CSharpEventPrinter { get; }
+        protected CSharpFunctionPrinter CSharpFunctionPrinter { get; }
+
+        protected CSharpTemplate(
+            CSharpPropertyPrinter csharpPropertyPrinter, 
+            CSharpEventPrinter csharpEventPrinter, 
+            CSharpFunctionPrinter csharpFunctionPrinter)
+        {
+            CSharpPropertyPrinter = csharpPropertyPrinter;
+            CSharpEventPrinter = csharpEventPrinter;
+            CSharpFunctionPrinter = csharpFunctionPrinter;
+        }
 
         protected string PrintUsings()
         {

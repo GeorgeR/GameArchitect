@@ -12,7 +12,7 @@ namespace GameArchitect.Design.Attributes
             var usage = GetType().GetAttribute<AttributeUsageAttribute>();
             var validOn = usage.ValidOn;
 
-            var message = $"This attribute is not valid on type {info.TypeName} called {info.GetPath()}.";
+            var message = $"This attribute is not valid on type {info.GetType().Name} called {info.GetPath()}.";
 
             if (!(validOn.HasFlag(AttributeTargets.Class) || validOn.HasFlag(AttributeTargets.Struct) || validOn.HasFlag(AttributeTargets.Enum)) && info is ITypeInfo)
                 throw new Exception(message);

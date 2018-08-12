@@ -12,9 +12,13 @@ namespace SomeGame.Tasks.Empty
         public Type ParameterType { get; }
         public Type OptionsType { get; } = typeof(EmptyOptions);
 
+        public async Task PreTask(ITaskParameters parameters) { }
+
         public async Task<bool> Run(ITaskParameters parameters)
         {
             return true;
         }
+
+        public async Task PostTask(ITaskParameters parameters) { }
     }
 }

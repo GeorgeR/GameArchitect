@@ -9,7 +9,11 @@ namespace GameArchitect.Tasks
         Type ParameterType { get; }
         Type OptionsType { get; }
 
+        Task PreTask(ITaskParameters parameters);
+        
         /* Returns true if the task was successful. */
         Task<bool> Run(ITaskParameters parameters);
+
+        Task PostTask(ITaskParameters parameters);
     }
 }

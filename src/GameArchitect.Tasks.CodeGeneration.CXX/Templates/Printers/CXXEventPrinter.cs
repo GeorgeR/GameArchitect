@@ -1,29 +1,22 @@
 ﻿using System;
-using GameArchitect.Design;
-using GameArchitect.Design.Metadata;
-using Microsoft.Extensions.Logging;
+using GameArchitect.Design.CXX.Metadata;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
 {
-    public class CXXEventPrinter : PrinterBase, ICXXPrinter<IEventInfo>
+    public class CXXEventPrinter : ICXXPrinter<CXXEventInfo>
     {
-        protected virtual ICXXPrinter<IMemberInfo> ParameterPrinter { get; }
+        protected CXXParameterPrinter ParameterPrinter { get; }
 
-        public CXXEventPrinter(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer, 
-            ITypeTransformer typeTransformer,
-            ICXXPrinter<IMemberInfo> parameterPrinter)
-            : base(log, nameTransformer, typeTransformer)
+        public CXXEventPrinter(CXXParameterPrinter parameterPrinter)
         {
             ParameterPrinter = parameterPrinter;
         }
 
-        public virtual string Print(IEventInfo info, CXXFileType fileType)
+        public virtual string Print(CXXEventInfo info, CXXFileType fileType)
         {
             throw new NotImplementedException();
         }
 
-        public string Print(IEventInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
+        public string Print(CXXEventInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
     }
 }

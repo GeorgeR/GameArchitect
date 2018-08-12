@@ -3,7 +3,7 @@ using GameArchitect.Design.Metadata;
 
 namespace GameArchitect.Tasks.CodeGeneration.CSharp.Templates
 {
-    internal class FunctionPrinter : IPrinter<FunctionInfo>
+    public class CSharpFunctionPrinter : IPrinter<FunctionInfo>
     {
         public string Print(FunctionInfo info)
         {

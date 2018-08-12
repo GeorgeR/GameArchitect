@@ -3,12 +3,11 @@ using GameArchitect.Design.Support;
 
 namespace GameArchitect.Design.Metadata
 {
-    public sealed class ProxyMemberInfo : MemberInfoBase<Type>
+    public sealed class ProxyMemberInfo<TTypeInfo> : MemberInfoBase<TTypeInfo, Type>
+        where TTypeInfo : class, ITypeInfo
     {
-        public override string TypeName { get; } = "Proxy";
-
-        public ProxyMemberInfo(ITypeInfo type, string name) 
-            : base(null, type.Native)
+        public ProxyMemberInfo(IMetadataProvider metadataProvider, ITypeInfo type, string name) 
+            : base(metadataProvider, null, type.Native)
         {
             Name = name;
             Type = type;

@@ -32,7 +32,8 @@ namespace GameArchitect.Design
             if (obj == null)
                 throw new Exception($"Type ({split[0]}) was not found. Called from {path}");
 
-            var obj2 = new TypeInfo(obj);
+            // TODO: Inject metadataprovider
+            var obj2 = new TypeInfo(null,obj);
 
             var resolvedProperty = obj2.Properties
                 .FirstOrDefault(o => o.Name.Equals(split[1], StringComparison.CurrentCultureIgnoreCase));

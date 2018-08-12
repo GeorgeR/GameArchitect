@@ -10,15 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
 {
-    public class UnrealPropertyPrinter : CXXPropertyPrinter
+    public class UnrealPropertyPrinter : ICXXPrinter<UnrealPropertyInfo>
     {
-        public UnrealPropertyPrinter(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer,
-            ITypeTransformer typeTransformer) 
-            : base(log, nameTransformer, typeTransformer) { }
-
-        public override string Print(IPropertyInfo info, CXXFileType fileType)
+        public string Print(UnrealPropertyInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
@@ -33,10 +27,15 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers
                 sb.AppendLine($"UPROPERTY({bpAccess},{editorAccess})");
             });
 
-            sb.AppendLine(base.Print(info, fileType));
+            //sb.AppendLine(base.Print(info, fileType));
             sb.RemoveLastLine();
 
             return sb.ToString();
+        }
+
+        public string Print(UnrealPropertyInfo info)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

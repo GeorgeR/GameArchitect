@@ -5,20 +5,27 @@ using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Design.Metadata
 {
-    public interface IEventInfo :  IMemberInfo<System.Reflection.EventInfo>
+    public interface IEventInfo : IMemberInfo<System.Reflection.EventInfo>
     {
         IList<IParameterInfo> Parameters { get; }
     }
 
-    public class EventInfo : MemberInfoBase<System.Reflection.EventInfo>, IEventInfo
+    public interface IEventInfo<TParameterInfo> : IEventInfo where TParameterInfo : class, IParameterInfo
     {
-        public override string TypeName { get; } = "Event";
+        new IList<TParameterInfo> Parameters { get; }
+    }
 
-        public EventInfo(ITypeInfo declaringType, System.Reflection.EventInfo native)
-            : base(declaringType, native)
+    public abstract class EventInfoBase<TTypeInfo, TParameterInfo>
+        : MemberInfoBase<TTypeInfo, System.Reflection.EventInfo>, 
+        IEventInfo<TParameterInfo>
+        where TTypeInfo : class, ITypeInfo
+        where TParameterInfo : class, IParameterInfo
+    {
+        protected EventInfoBase(IMetadataProvider metadataProvider, TTypeInfo declaringType, System.Reflection.EventInfo native)
+            : base(metadataProvider, declaringType, native)
         {
-            Name = Native.Name;
-            Type = ResolveType(Native.EventHandlerType, Native);
+            Name = native.Name;
+            Type = ResolveType(native.EventHandlerType, native);
         }
 
         private IList<IParameterInfo> _parameters;
@@ -29,6 +36,7 @@ namespace GameArchitect.Design.Metadata
                 if (_parameters != null)
                     return _parameters;
 
+                // TODO
                 _parameters = new List<IParameterInfo>();
                 //_parameters.AddRange(
                 //    Native
@@ -38,6 +46,7 @@ namespace GameArchitect.Design.Metadata
                 return _parameters;
             }
         }
+        IList<TParameterInfo> IEventInfo<TParameterInfo>.Parameters => Parameters.Cast<TParameterInfo>().ToList();
 
         public override string GetPath()
         {
@@ -52,5 +61,11 @@ namespace GameArchitect.Design.Metadata
                        .Cast<IDelegatedValidatable>()
                        .All(a => a.IsValid(logger, this));
         }
+    }
+
+    public sealed class EventInfo : EventInfoBase<TypeInfo, ParameterInfo>
+    {
+        public EventInfo(IMetadataProvider metadataProvider, TypeInfo declaringType, System.Reflection.EventInfo native) 
+            : base(metadataProvider, declaringType, native) { }
     }
 }

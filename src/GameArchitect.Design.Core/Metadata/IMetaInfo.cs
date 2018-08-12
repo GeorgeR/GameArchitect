@@ -11,7 +11,7 @@ namespace GameArchitect.Design.Metadata
     {
         // Name without guff (related to generics, nullables)
         string Name { get; }
-        string TypeName { get; }
+        //string TypeName { get; }
 
         bool IsStatic { get; }
         Permission Permission { get; }
@@ -36,7 +36,6 @@ namespace GameArchitect.Design.Metadata
         protected abstract ICustomAttributeProvider AttributeProvider { get; }
 
         public abstract string Name { get; protected set; }
-        public abstract string TypeName { get; }
 
         public virtual bool IsStatic { get; set; } = false;
         public virtual Permission Permission { get; set; } = Permission.ReadWrite;

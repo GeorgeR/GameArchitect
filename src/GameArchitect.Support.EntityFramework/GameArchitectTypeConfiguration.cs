@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using GameArchitect.Design;
 using GameArchitect.Design.Attributes;
 using GameArchitect.Design.Attributes.Db;
@@ -12,17 +10,17 @@ using GameArchitect.Extensions.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage;
-using PropertyInfo = GameArchitect.Design.Metadata.PropertyInfo;
-using TypeInfo = GameArchitect.Design.Metadata.TypeInfo;
 
 namespace GameArchitect.Support.EntityFramework
 {
     public class GameArchitectTypeConfiguration<T> : IEntityTypeConfiguration<T> where T : class
     {
+        private IMetadataProvider MetadataProvider { get; }
         private ITypeMappingSource TypeMappingSource { get; }
         
-        public GameArchitectTypeConfiguration(ITypeMappingSource typeMappingSource)
+        public GameArchitectTypeConfiguration(IMetadataProvider metadataProvider, ITypeMappingSource typeMappingSource)
         {
+            MetadataProvider = metadataProvider;
             TypeMappingSource = typeMappingSource;
         }
 
@@ -30,8 +28,8 @@ namespace GameArchitect.Support.EntityFramework
         {
             if(!typeof(T).HasAttribute<ExportAttribute>())
                 throw new Exception($"Type {typeof(T).Name} must contain an [Export] attribute to be configured here.");
-            
-            var typeInfo = new TypeInfo(typeof(T));
+
+            var typeInfo = MetadataProvider.Create(typeof(T));
 
             var properties = typeInfo
                 .Properties

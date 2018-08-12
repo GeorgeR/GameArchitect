@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using CommandLine;
+using GameArchitect.DependencyInjection;
 using GameArchitect.Design;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Tasks.Registration;
@@ -11,12 +13,15 @@ using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.Runner
 {
-    public sealed class Application
+    public sealed class Application : IServiceConfiguration
     {
         private ILogger<Application> Log { get; }
 
         public static void Main(string[] args)
         {
+            var resolver = new AssemblyResolver();
+            AssemblyLoadContext.Default.Resolving += resolver.Resolve;
+            
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(o =>
                 {
@@ -26,28 +31,20 @@ namespace GameArchitect.Tasks.Runner
             Console.Read();
         }
 
+        public Application() { }
+
         public Application(Options options)
         {
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IServiceCollection>(provider => serviceCollection);
-            serviceCollection.AddScoped<ITaskParameters, TaskParameters>();
-            serviceCollection.AddSingleton<TaskCatalog>();
-            serviceCollection.AddSingleton<DefaultMetadataProvider>();
-            serviceCollection.AddSingleton<ExportCatalog>();
-            serviceCollection.AddLogging(_ => _.AddConsole());
+            var services = new ServiceCollection();
+            services.AddConfigurations(typeof(Application).Assembly);
 
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-            Log = serviceProvider.GetService<ILogger<Application>>();
-
+            var serviceProvider = services.BuildServiceProvider();
             var entityPaths = options.EntityPaths.Split(',');
             var exportCatalog = serviceProvider.GetService<ExportCatalog>();
             exportCatalog.FindInAssemblies(entityPaths);
 
+            Log = serviceProvider.GetService<ILogger<Application>>();
             Log.LogInformation($"{exportCatalog.ToList<Type>().Count} entities found in {entityPaths.FirstOrDefault()}.");
-
-            serviceCollection.AddSingleton(provider => exportCatalog);
-
-            serviceProvider = serviceCollection.BuildServiceProvider();
 
             if (string.IsNullOrEmpty(options.TaskPaths))
             {
@@ -58,13 +55,24 @@ namespace GameArchitect.Tasks.Runner
             else
             {
                 var taskCatalog = serviceProvider.GetService<TaskCatalog>();
-                taskCatalog.Compose(options.TaskPaths.Split(','));
+                taskCatalog.Compose(services, options.TaskPaths.Split(','));
 
-                var taskRunner = new TaskRunner(serviceCollection);
+                var taskRunner = new TaskRunner(services);
                 var taskBootstrap = new TaskBootstrap(taskCatalog, exportCatalog, options.Task, options.TaskOptions);
 
                 taskBootstrap.Run(taskRunner).Wait();
             }
+        }
+
+        public void Setup(IServiceCollection services)
+        {
+            services.AddSingleton(provider => services);
+            services.AddScoped<ITaskParameters, TaskParameters>();
+            services.AddSingleton<TaskCatalog>();
+            services.AddSingleton<DefaultMetadataProvider>();
+            services.AddSingleton<IMetadataProvider>(provider => provider.GetService<DefaultMetadataProvider>());
+            services.AddSingleton<ExportCatalog>();
+            services.AddLogging(_ => _.AddConsole());
         }
     }
 }

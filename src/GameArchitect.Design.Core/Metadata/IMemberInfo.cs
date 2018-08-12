@@ -23,13 +23,18 @@ namespace GameArchitect.Design.Metadata
 
     }
 
-    public abstract class MemberInfoBase<TNative> : MetaInfoBase, IMemberInfo<TNative> where TNative : ICustomAttributeProvider
+    public abstract class MemberInfoBase<TTypeInfo, TNative> 
+        : MetaInfoBase, 
+        IMemberInfo<TNative>
+        where TTypeInfo : class, ITypeInfo
+        where TNative : ICustomAttributeProvider
     {
+        protected IMetadataProvider MetadataProvider { get; }
+
         public virtual TNative Native { get; }
         protected override ICustomAttributeProvider AttributeProvider => Native;
 
         public override string Name { get; protected set; }
-        public abstract override string TypeName { get; }
 
         public override Permission Permission { get; set; }
         public Mutability Mutability { get; protected set; } = Mutability.Immutable;
@@ -39,8 +44,10 @@ namespace GameArchitect.Design.Metadata
         public ITypeInfo Type { get; protected set; }
         public ITypeInfo DeclaringType { get; }
 
-        protected MemberInfoBase(ITypeInfo declaringType, TNative native)
+        protected MemberInfoBase(IMetadataProvider metadataProvider, ITypeInfo declaringType, TNative native)
         {
+            MetadataProvider = metadataProvider;
+
             Native = native;
             DeclaringType = declaringType;
         }
@@ -73,7 +80,7 @@ namespace GameArchitect.Design.Metadata
                     native = native.GenericTypeArguments[0];
             }
 
-            return new TypeInfo(native);
+            return MetadataProvider.Create(native);
         }
 
         public abstract override string GetPath();

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Linq;
 using System.Text;
 using GameArchitect.Tasks.CodeGeneration.CXX;
 using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
@@ -10,7 +11,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
     {
         private string GeneratedHeaderName { get; set; }
 
-        public UnrealHeaderTemplate(params CXXTypeTemplate[] typeTemplates) : base(typeTemplates) { }
+        public UnrealHeaderTemplate(params UnrealTypeTemplate[] typeTemplates) : base(typeTemplates.Cast<CXXTypeTemplate>().ToArray()) { }
 
         public void AddGeneratedHeaderInclude(string filePath)
         {

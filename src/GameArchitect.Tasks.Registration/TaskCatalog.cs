@@ -5,8 +5,10 @@ using System.ComponentModel.Composition.Hosting;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GameArchitect.DependencyInjection;
 using GameArchitect.Extensions;
 using GameArchitect.Extensions.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.Registration
@@ -17,7 +19,7 @@ namespace GameArchitect.Tasks.Registration
 
         private ILogger<TaskCatalog> Log { get; }
 
-        private TaskComparer TaskComparer { get; } = new TaskComparer();
+        private TaskComparer TaskComparer { get; set; }
 
         private readonly IDictionary<string, ITask> _tasks = new Dictionary<string, ITask>();
         public ITask this[string taskName]
@@ -41,13 +43,35 @@ namespace GameArchitect.Tasks.Registration
             if (!_isComposed)
                 throw new Exception($"TaskCatalog.Compose() not called.");
 
-            return _tasks.ContainsKey(taskName.ToLower());
+            taskName = taskName.ToLower();
+
+            if (_tasks.ContainsKey(taskName))
+            {
+                if(_tasks[taskName] == null)
+                    throw new NullReferenceException($"The task {taskName} was null for some reason.");
+
+                return true;
+            }
+
+            return false;
         }
 
-        public void Compose(params string[] taskAssemblyPaths)
+        public void Compose(IServiceCollection services, params string[] taskAssemblyPaths)
         {
             if(taskAssemblyPaths.Length <= 0)
                 throw new Exception("Task assembly paths was empty.");
+
+            //var a = Assembly.LoadFile(taskAssemblyPaths[0]);
+            //var types = a.GetExportedTypes()
+            //    .Where(o => typeof(ITask).IsAssignableFrom(o))
+            //    .Select(o => (ITask)Activator.CreateInstance(o));
+
+            //var t = types.FirstOrDefault();
+
+            //var catalog = new AssemblyCatalog(a);
+            //var container = new CompositionContainer(catalog);
+            //var e = container.GetExports<ITask>().ToList()[0].Value;
+            //var x = e;
 
             var catalog = new AggregateCatalog();
             taskAssemblyPaths.ForEach(o =>
@@ -67,14 +91,14 @@ namespace GameArchitect.Tasks.Registration
                 {
                     Log.LogInformation($"Registering directory {o} in TaskCatalog.");
 
-                    var directoryCatalog = new DirectoryCatalog(o);
-                    catalog.Catalogs.Add(directoryCatalog);
+                    //var directoryCatalog = new DirectoryCatalog(o);
+                    //catalog.Catalogs.Add(directoryCatalog);
                 }
             });
 
-            using (var container = new CompositionContainer(catalog))
+            using (var compositionContainer = new CompositionContainer(catalog))
             {
-                var uniqueTasks = container
+                var uniqueTasks = compositionContainer
                     .GetExports<ITask>()
                     .Distinct(TaskComparer)
                     .ToList();
@@ -83,7 +107,17 @@ namespace GameArchitect.Tasks.Registration
                 foreach (var export in uniqueTasks)
                 {
                     var e = export.Value;
-                    var taskName = string.IsNullOrEmpty(e.Name) 
+
+                    try
+                    {
+                        var hat = e.Name;
+                    }
+                    catch (Exception exception)
+                    {
+                        Log.LogError(exception, "");
+                    }
+
+                    var taskName = string.IsNullOrEmpty(e.Name)
                         ? e.GetType().Name.Replace("Task", "").ToLower()
                         : e.Name.ToLower();
 
@@ -91,12 +125,14 @@ namespace GameArchitect.Tasks.Registration
                     {
                         Log.LogInformation($"Found task: {taskName}.");
                         e.Name = taskName;
-                        if(IsValid(e))
+                        if (IsValid(e))
                             _tasks.Add(taskName, e);
                     }
                 }
+
+                services.AddConfigurations(uniqueTasks.Select(o => o.Value.GetType().Assembly).ToArray());
             }
-            
+
             _isComposed = true;
         }
 

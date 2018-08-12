@@ -2,9 +2,9 @@
 
 namespace GameArchitect.Design.CXX.Metadata
 {
-    public class CXXPropertyInfo : PropertyInfo
+    public sealed class CXXPropertyInfo : PropertyInfoBase<CXXTypeInfo>
     {
-        public CXXPropertyInfo(ITypeInfo declaringType, System.Reflection.PropertyInfo native) 
-            : base(declaringType, native) { }
+        public CXXPropertyInfo(CXXMetadataProvider metadataProvider, CXXTypeInfo declaringType, System.Reflection.PropertyInfo native) 
+            : base(metadataProvider, declaringType, native) { }
     }
 }

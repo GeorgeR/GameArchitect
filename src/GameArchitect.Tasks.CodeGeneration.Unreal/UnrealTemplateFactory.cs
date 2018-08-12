@@ -1,31 +1,28 @@
 ﻿using System;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Unreal.Attributes;
+using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Tasks.CodeGeneration.CXX.Templates;
 using GameArchitect.Tasks.CodeGeneration.Unreal.Templates;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal
 {
     public class UnrealTemplateFactory : ITemplateFactory
     {
-        private ILogger<ITemplate> Log { get; }
-        private IMetadataProvider MetadataProvider { get; set; }
+        private UnrealMetadataProvider MetadataProvider { get; }
 
-        public UnrealTemplateFactory(ILogger<ITemplate> log)
+        public UnrealTemplateFactory() { }
+
+        public UnrealTemplateFactory(UnrealMetadataProvider metadataProvider)
         {
-            Log = log;
+            MetadataProvider = metadataProvider;
         }
 
         public void Setup(IServiceCollection services)
         {
             services.AddTransient<UnrealStructTemplate>();
             services.AddTransient<UnrealClassTemplate>();
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            MetadataProvider = serviceProvider.GetService<IMetadataProvider>();
         }
 
         public ITemplate Create(ITypeInfo typeInfo)

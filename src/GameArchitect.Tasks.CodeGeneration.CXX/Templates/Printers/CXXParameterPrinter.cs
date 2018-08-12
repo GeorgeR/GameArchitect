@@ -3,19 +3,21 @@ using System.Text;
 using GameArchitect.Design;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Design.Support;
-using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
 {
-    public class CXXParameterPrinter : PrinterBase, ICXXPrinter<IMemberInfo>
+    public sealed class CXXParameterPrinter : ICXXPrinter<IMemberInfo>
     {
-        public CXXParameterPrinter(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer, 
-            ITypeTransformer typeTransformer)
-            : base(log, nameTransformer, typeTransformer) { }
+        private CXXNameTransformer NameTransformer { get; }
+        private CXXTypeTransformer TypeTransformer { get; }
 
-        public virtual string Print(IMemberInfo info, CXXFileType fileType)
+        public CXXParameterPrinter(CXXNameTransformer nameTransformer, CXXTypeTransformer typeTransformer)
+        {
+            NameTransformer = nameTransformer;
+            TypeTransformer = typeTransformer;
+        }
+
+        public string Print(IMemberInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
             

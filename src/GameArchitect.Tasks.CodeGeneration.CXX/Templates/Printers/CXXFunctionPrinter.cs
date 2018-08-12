@@ -3,28 +3,28 @@ using System.Collections.Generic;
 using System.Text;
 using GameArchitect.Design;
 using GameArchitect.Design.Attributes;
+using GameArchitect.Design.CXX.Metadata;
 using GameArchitect.Design.Metadata;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
-using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
 {
-    public class CXXFunctionPrinter : PrinterBase, ICXXPrinter<IFunctionInfo>
+    public sealed class CXXFunctionPrinter : ICXXPrinter<CXXFunctionInfo>
     {
-        protected virtual ICXXPrinter<IMemberInfo> ParameterPrinter { get; }
+        private CXXNameTransformer NameTransformer { get; }
+        private CXXTypeTransformer TypeTransformer { get; }
 
-        public CXXFunctionPrinter(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer,
-            ITypeTransformer typeTransformer,
-            ICXXPrinter<IMemberInfo> parameterPrinter)
-            : base(log, nameTransformer, typeTransformer)
+        private CXXParameterPrinter ParameterPrinter { get; }
+
+        public CXXFunctionPrinter(CXXNameTransformer nameTransformer, CXXTypeTransformer typeTransformer, CXXParameterPrinter parameterPrinter)
         {
+            NameTransformer = nameTransformer;
+            TypeTransformer = typeTransformer;
             ParameterPrinter = parameterPrinter;
         }
 
-        protected virtual string PrintParameters(IFunctionInfo info, CXXFileType fileType)
+        private string PrintParameters(CXXFunctionInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
@@ -42,7 +42,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
             return sb.ToString();
         }
 
-        public virtual string Print(IFunctionInfo info, CXXFileType fileType)
+        public string Print(CXXFunctionInfo info, CXXFileType fileType)
         {
             var sb = new StringBuilder();
 
@@ -60,6 +60,6 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers
             return sb.ToString();
         }
 
-        public string Print(IFunctionInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
+        public string Print(CXXFunctionInfo info) { throw new NotImplementedException($"Use the CXXFileType overload."); }
     }
 }

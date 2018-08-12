@@ -6,12 +6,10 @@ if(!(Test-Path $packDir)) {
     New-Item -ItemType Directory -Force -Path $packDir
 }
 
-Write-Host $packDir
+Write-Host "Finding latest packages to upload"
 $projects = Get-ChildItem -Path $PSScriptRoot\src -Recurse | where {$_.extension -eq ".nupkg" }
 foreach ($project in $projects) {
     Copy-Item -Path $project.FullName -Destination $packDir
-    Write-Host $project.FullName
-    Write-Host $packDir
 }
 Pop-Location
 
@@ -40,9 +38,10 @@ foreach ($package in $packages) {
 }
 
 $latestPackages = $latestPackages | Sort-Object -Unique
+Write-Host "Found latest packages"
 
-$keys = (Get-ChildItem Env:Path).Value.Split(";") | where { Test-Path "$($_)\\keys.json" } 
-$keys = Get-Content "$($keys)\\keys.json" | ConvertFrom-Json
+$keys = (Get-ChildItem Env:Path).Value.Split(";") | where { Test-Path "$($_)\\keys\\keys.json" } 
+$keys = Get-Content "$($keys)\\keys\\keys.json" | ConvertFrom-Json
 
 foreach ($package in $latestPackages) {
     dotnet nuget push $package.FullName -k $keys.nuget -s https://api.nuget.org/v3/index.json

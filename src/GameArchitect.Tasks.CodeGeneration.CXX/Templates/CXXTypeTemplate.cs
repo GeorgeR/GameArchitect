@@ -1,39 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using GameArchitect.Design;
-using GameArchitect.Design.Metadata;
+using GameArchitect.Design.CXX.Metadata;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
-using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
 {
-    public class CXXTypeTemplate : PrinterBase, ICXXTemplate
+    public class CXXTypeTemplate : ICXXTemplate
     {
-        protected ICXXPrinter<IPropertyInfo> PropertyPrinter { get; }
-        protected ICXXPrinter<IEventInfo> EventPrinter { get; }
-        protected ICXXPrinter<IFunctionInfo> FunctionPrinter { get; }
+        private CXXPropertyPrinter PropertyPrinter { get; }
+        private CXXEventPrinter EventPrinter { get; }
+        private CXXFunctionPrinter FunctionPrinter { get; }
 
         public Dictionary<CXXFileType, HashSet<string>> Includes { get; } =
-            new Dictionary<CXXFileType, HashSet<string>>()
+            new Dictionary<CXXFileType, HashSet<string>>
             {
                 {CXXFileType.Declaration, new HashSet<string>()},
                 {CXXFileType.Definition, new HashSet<string>()}
             };
 
-        protected ITypeInfo Info { get; }
+        protected CXXTypeInfo Info { get; }
 
         public CXXTypeTemplate(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer, 
-            ITypeTransformer typeTransformer,
-            ICXXPrinter<IPropertyInfo> propertyPrinter,
-            ICXXPrinter<IEventInfo> eventPrinter,
-            ICXXPrinter<IFunctionInfo> functionPrinter,
-            ITypeInfo info)
-            : base(log, nameTransformer, typeTransformer)
+            CXXPropertyPrinter propertyPrinter, 
+            CXXEventPrinter eventPrinter, 
+            CXXFunctionPrinter functionPrinter, 
+            CXXTypeInfo info)
         {
             PropertyPrinter = propertyPrinter;
             EventPrinter = eventPrinter;
@@ -42,7 +36,7 @@ namespace GameArchitect.Tasks.CodeGeneration.CXX.Templates
             Info = info;
         }
 
-        protected string PrintIncludes(CXXFileType fileType)
+        private string PrintIncludes(CXXFileType fileType)
         {
             var sb = new StringBuilder();
 

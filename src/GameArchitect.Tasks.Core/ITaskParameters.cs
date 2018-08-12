@@ -1,45 +1,47 @@
 ﻿using System;
+using GameArchitect.DependencyInjection;
 using GameArchitect.Design;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace GameArchitect.Tasks
 {
-    public interface ITaskParameters
+    public interface ITaskParameters : IServiceConfiguration
     {
         ILogger<ITaskParameters> Log { get; }
         ExportCatalog Exports { get; } 
         ITaskOptions Options { get; }
 
-        void Inject(IServiceCollection services);
         T GetService<T>();
         TOptions GetOptions<TOptions>() where TOptions : ITaskOptions;
     }
 
     public class TaskParameters : ITaskParameters, IValidatable
     {
-        public ILogger<ITaskParameters> Log { get; }
-
         private IServiceProvider ServiceProvider { get; }
+        
+        public ILogger<ITaskParameters> Log { get; }
         
         public ExportCatalog Exports { get; }
         public ITaskOptions Options { get; }
-        
+
+        public TaskParameters() { }
+
         public TaskParameters(
+            IServiceProvider serviceProvider,
             ILogger<ITaskParameters> logger, 
-            IServiceCollection services,
             ExportCatalog exports, 
             ITaskOptions options)
         {
+            ServiceProvider = serviceProvider;
+            
             Log = logger;
-
-            ServiceProvider = services.BuildServiceProvider();
-
+            
             Exports = exports;
             Options = options;
         }
 
-        public virtual void Inject(IServiceCollection services) { }
+        public virtual void Setup(IServiceCollection services) { }
 
         public T GetService<T>()
         {
@@ -55,9 +57,6 @@ namespace GameArchitect.Tasks
         {
             if(Log == null)
                 logger.LogError("Log is null.");
-
-            if(ServiceProvider == null)
-                logger.LogError("ServiceProvider is null");
 
             if(Exports == null)
                 logger.LogError("Exports is null");

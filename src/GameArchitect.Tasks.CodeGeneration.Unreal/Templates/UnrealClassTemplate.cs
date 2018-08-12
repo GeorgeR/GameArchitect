@@ -1,25 +1,30 @@
 ﻿using System.Text;
 using GameArchitect.Design;
-using GameArchitect.Design.Metadata;
+using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Extensions;
 using GameArchitect.Tasks.CodeGeneration.CXX;
-using GameArchitect.Tasks.CodeGeneration.CXX.Templates.Printers;
 using GameArchitect.Tasks.CodeGeneration.Extensions;
-using Microsoft.Extensions.Logging;
+using GameArchitect.Tasks.CodeGeneration.Unreal.Templates.Printers;
 
 namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 {
-    public class UnrealClassTemplate : UnrealTypeTemplate
+    public sealed class UnrealClassTemplate : UnrealTypeTemplate
     {
+        private UnrealNameTransformer NameTransformer { get; }
+        private UnrealTypeTransformer TypeTransformer { get; }
+
         public UnrealClassTemplate(
-            ILogger<ITemplate> log, 
-            INameTransformer nameTransformer, 
-            ITypeTransformer typeTransformer, 
-            ICXXPrinter<IPropertyInfo> propertyPrinter, 
-            ICXXPrinter<IEventInfo> eventPrinter, 
-            ICXXPrinter<IFunctionInfo> functionPrinter,
-            ITypeInfo info) 
-            : base(log, nameTransformer, typeTransformer, propertyPrinter, eventPrinter, functionPrinter, info) { }
+            UnrealPropertyPrinter propertyPrinter, 
+            UnrealEventPrinter eventPrinter, 
+            UnrealFunctionPrinter functionPrinter, 
+            UnrealTypeInfo info, 
+            UnrealNameTransformer nameTransformer, 
+            UnrealTypeTransformer typeTransformer) 
+            : base(propertyPrinter, eventPrinter, functionPrinter, info)
+        {
+            NameTransformer = nameTransformer;
+            TypeTransformer = typeTransformer;
+        }
 
         public override string Print(CXXFileType fileType)
         {
@@ -48,7 +53,7 @@ namespace GameArchitect.Tasks.CodeGeneration.Unreal.Templates
 
                 Info.Properties.ForEach(o =>
                 {
-                    sb.Append(PropertyPrinter.Print(o, CXXFileType.Declaration));
+                    sb.Append(PropertyPrinter.Print((UnrealPropertyInfo) o, CXXFileType.Declaration));
                     sb.AppendEmptyLine();
                 });
                 sb.RemoveLastLine();

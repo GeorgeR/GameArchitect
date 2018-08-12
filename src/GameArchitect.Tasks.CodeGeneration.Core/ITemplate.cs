@@ -14,19 +14,19 @@ namespace GameArchitect.Tasks.CodeGeneration
         string Print(TMeta info);
     }
 
-    public abstract class PrinterBase
-    {
-        protected ILogger<ITemplate> Log { get; }
+    //public abstract class PrinterBase
+    //{
+    //    protected ILogger<ITemplate> Log { get; }
 
-        protected INameTransformer NameTransformer { get; }
-        protected ITypeTransformer TypeTransformer { get; }
+    //    protected INameTransformer NameTransformer { get; }
+    //    protected ITypeTransformer TypeTransformer { get; }
 
-        protected PrinterBase(ILogger<ITemplate> log, INameTransformer nameTransformer, ITypeTransformer typeTransformer)
-        {
-            Log = log;
+    //    protected PrinterBase(ILogger<ITemplate> log, INameTransformer nameTransformer, ITypeTransformer typeTransformer)
+    //    {
+    //        Log = log;
 
-            NameTransformer = nameTransformer;
-            TypeTransformer = typeTransformer;
-        }
-    }
+    //        NameTransformer = nameTransformer;
+    //        TypeTransformer = typeTransformer;
+    //    }
+    //}
 }

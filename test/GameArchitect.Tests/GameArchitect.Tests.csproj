@@ -6,16 +6,31 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.3.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.3.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\GameArchitect.Tasks.Runner\GameArchitect.Tasks.Runner.csproj" />
-    <ProjectReference Include="..\SomeGame.Design.Data\SomeGame.Design.Data.csproj" />
-    <ProjectReference Include="..\SomeGame.Tasks.CodeGeneration.Unreal\SomeGame.Tasks.CodeGeneration.Unreal.csproj" />
-    <ProjectReference Include="..\SomeGame.Tasks.Empty\SomeGame.Tasks.Empty.csproj" />
-    <ProjectReference Include="..\SomeGame.Tasks.EntityFramework\SomeGame.Tasks.EntityFramework.csproj" />
+    <ProjectReference Include="..\..\src\GameArchitect.Tasks.Runner\GameArchitect.Tasks.Runner.csproj">
+      <CopyLocalSatelliteAssemblies></CopyLocalSatelliteAssemblies>
+      <Private></Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SomeGame.Design.Data\SomeGame.Design.Data.csproj">
+      <Private>false</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
+    <ProjectReference Include="..\SomeGame.Tasks.CodeGeneration.Unreal\SomeGame.Tasks.CodeGeneration.Unreal.csproj">
+      <Private>false</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
+    <ProjectReference Include="..\SomeGame.Tasks.Empty\SomeGame.Tasks.Empty.csproj">
+      <Private>false</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
+    <ProjectReference Include="..\SomeGame.Tasks.EntityFramework\SomeGame.Tasks.EntityFramework.csproj">
+      <Private>false</Private>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

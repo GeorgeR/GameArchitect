@@ -68,7 +68,8 @@ namespace GameArchitect.Design.Attributes
                     throw new Exception(
                         $"Tried to deconstruct with invalid property name ({propertyName}) on type {type.GetPath()}.");
             
-            result.Add(new ProxyMemberInfo(actualProperty.Type, propertyName));
+            // TODO: Needs metadataprovider
+            result.Add(new ProxyMemberInfo<ITypeInfo>(null, actualProperty.Type, propertyName));
 
             if (!path.Contains('.'))
                 return;
@@ -93,7 +94,8 @@ namespace GameArchitect.Design.Attributes
                 var deconstructedPath = new List<IMemberInfo>();
                 DeconstructPath(logger, type, propertyPath, ref deconstructedPath);
 
-                result.Add(new ProxyMemberInfo(deconstructedPath.Last().Type, $"{name}{deconstructedPath.Aggregate(string.Empty, (previous, current) => previous + current.Name)}"));
+                // TODO: Needs metadataprovider
+                result.Add(new ProxyMemberInfo<ITypeInfo>(null, deconstructedPath.Last().Type, $"{name}{deconstructedPath.Aggregate(string.Empty, (previous, current) => previous + current.Name)}"));
             }
         }
 

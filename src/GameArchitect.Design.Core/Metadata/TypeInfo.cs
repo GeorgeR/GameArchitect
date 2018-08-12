@@ -22,18 +22,39 @@ namespace GameArchitect.Design.Metadata
         T Create<T>();
     }
 
-    public class TypeInfo : MetaInfoBase, ITypeInfo
+    public interface ITypeInfo<TTypeInfo, TPropertyInfo, TEventInfo, TFunctionInfo> : ITypeInfo
+        where TTypeInfo : class, ITypeInfo
+        where TPropertyInfo : class, IPropertyInfo
+        where TEventInfo : class, IEventInfo
+        where TFunctionInfo : class, IFunctionInfo
     {
-        public System.Type Native { get; }
-        protected override ICustomAttributeProvider AttributeProvider => Native;
+        new IList<TTypeInfo> BaseTypes { get; }
+        new IList<TPropertyInfo> Properties { get; }
+        new IList<TEventInfo> Events { get; }
+        new IList<TFunctionInfo> Functions { get; }
+    }
 
+    public abstract class TypeInfoBase<TTypeInfo, TPropertyInfo, TEventInfo, TFunctionInfo>
+        : MetaInfoBase,
+        ITypeInfo<TTypeInfo, TPropertyInfo, TEventInfo, TFunctionInfo>
+        where TTypeInfo : class, ITypeInfo
+        where TPropertyInfo : class, IPropertyInfo
+        where TEventInfo : class, IEventInfo
+        where TFunctionInfo : class, IFunctionInfo
+    {
+        protected IMetadataProvider MetadataProvider { get; }
+
+        protected override ICustomAttributeProvider AttributeProvider => Native;
+        public System.Type Native { get; }
+        
         public override string Name { get; protected set; }
-        public override string TypeName => "Type";
 
         public TypeType TypeType { get; set; }
 
-        public TypeInfo(Type native)
+        protected TypeInfoBase(IMetadataProvider metadataProvider, Type native)
         {
+            MetadataProvider = metadataProvider;
+
             Native = native;
             Name = native.Name;
 
@@ -50,19 +71,20 @@ namespace GameArchitect.Design.Metadata
 
                 _baseTypes = new List<ITypeInfo>();
                 if (Native.BaseType != null)
-                    _baseTypes.Add(new TypeInfo(Native.BaseType));
+                    _baseTypes.Add(MetadataProvider.Create(Native.BaseType));
 
                 var interfaces = Native.GetInterfaces();
                 if (interfaces.Length > 0)
                 {
                     foreach (var iface in interfaces)
-                        _baseTypes.Add(new TypeInfo(iface));
+                        _baseTypes.Add(MetadataProvider.Create(iface));
                 }
 
                 return _baseTypes;
             }
         }
-        
+        IList<TTypeInfo> ITypeInfo<TTypeInfo, TPropertyInfo, TEventInfo, TFunctionInfo>.BaseTypes => BaseTypes.Cast<TTypeInfo>().ToList();
+
         private IList<IPropertyInfo> _properties;
         public IList<IPropertyInfo> Properties
         {
@@ -70,12 +92,12 @@ namespace GameArchitect.Design.Metadata
             {
                 if (_properties != null)
                     return _properties;
-                
+
                 _properties = new List<IPropertyInfo>();
                 _properties.AddRange(
                     Native
                         .GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                        .Select(o => new PropertyInfo(this, o)));
+                        .Select(o => MetadataProvider.Create(this, o)));
 
                 // Fields not supported for now
                 //result = result.Join(
@@ -86,6 +108,7 @@ namespace GameArchitect.Design.Metadata
                 return _properties;
             }
         }
+        IList<TPropertyInfo> ITypeInfo<TTypeInfo, TPropertyInfo, TEventInfo, TFunctionInfo>.Properties => Properties.Cast<TPropertyInfo>().ToList();
 
         private IList<IEventInfo> _events;
         public IList<IEventInfo> Events
@@ -99,11 +122,12 @@ namespace GameArchitect.Design.Metadata
                 _events.AddRange(
                     Native
                         .GetEvents(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
-                        .Select(o => new EventInfo(this, o)));
+                        .Select(o => MetadataProvider.Create(this, o)));
 
                 return _events;
             }
         }
+        IList<TEventInfo> ITypeInfo<TTypeInfo, TPropertyInfo, TEventInfo, TFunctionInfo>.Events => Events.Cast<TEventInfo>().ToList();
 
         private IList<IFunctionInfo> _functions;
         public IList<IFunctionInfo> Functions
@@ -121,12 +145,13 @@ namespace GameArchitect.Design.Metadata
                         .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static)
                         .Where(o => !o.IsSpecialName) // Excludes property accessors
                         .Where(o => !baseFunctions.Contains(o.Name)) // Exclude base methods
-                        .Select(o => new FunctionInfo(this, o)));
+                        .Select(o => MetadataProvider.Create(this, o)));
 
                 return _functions;
             }
         }
-        
+        IList<TFunctionInfo> ITypeInfo<TTypeInfo, TPropertyInfo, TEventInfo, TFunctionInfo>.Functions => Functions.Cast<TFunctionInfo>().ToList();
+
         public bool ImplementsInterface<TInterface>()
         {
             return typeof(TInterface).IsAssignableFrom(Native);
@@ -137,10 +162,10 @@ namespace GameArchitect.Design.Metadata
             return typeof(T).IsAssignableFrom(Native);
         }
 
-        public static implicit operator Type(TypeInfo source)
-        {
-            return source.Native;
-        }
+        //public static implicit operator Type(TypeInfo source)
+        //{
+        //    return source.Native;
+        //}
 
         public override string GetPath()
         {
@@ -162,5 +187,12 @@ namespace GameArchitect.Design.Metadata
                    && Events.All(e => e.IsValid(logger))
                    && Functions.All(f => f.IsValid(logger));
         }
+    }
+
+    public class TypeInfo 
+        : TypeInfoBase<TypeInfo, PropertyInfo, EventInfo, FunctionInfo>
+    {
+        public TypeInfo(IMetadataProvider metadataProvider, Type native) 
+            : base(metadataProvider, native) { }
     }
 }

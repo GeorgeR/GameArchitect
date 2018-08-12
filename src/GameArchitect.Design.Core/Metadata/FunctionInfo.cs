@@ -14,17 +14,25 @@ namespace GameArchitect.Design.Metadata
         IList<IParameterInfo> Parameters { get; }
     }
 
-    public class FunctionInfo : MemberInfoBase<System.Reflection.MethodInfo>, IFunctionInfo
+    public interface IFunctionInfo<TParamterInfo> : IFunctionInfo
+        where TParamterInfo : IParameterInfo
     {
-        public override string TypeName => "Function";
+        new IList<TParamterInfo> Parameters { get; }
+    }
 
-        public FunctionInfo(ITypeInfo declaringType, System.Reflection.MethodInfo native)
-            : base(declaringType, native)
+    public abstract class FunctionInfoBase<TTypeInfo, TParameterInfo>
+        : MemberInfoBase<TTypeInfo, System.Reflection.MethodInfo>,
+        IFunctionInfo<TParameterInfo>
+        where TTypeInfo : class, ITypeInfo
+        where TParameterInfo : class, IParameterInfo
+    {
+        protected FunctionInfoBase(IMetadataProvider metadataProvider, TTypeInfo declaringType, System.Reflection.MethodInfo native)
+            : base(metadataProvider, declaringType, native)
         {
             Name = native.Name;
-            Type = ResolveType(Native.ReturnType, Native);
+            Type = ResolveType(native.ReturnType, native);
 
-            Mutability = Native.GetCustomAttribute<ImmutableAttribute>() != null ? Mutability.Immutable : Mutability.Mutable;
+            Mutability = native.GetCustomAttribute<ImmutableAttribute>() != null ? Mutability.Immutable : Mutability.Mutable;
             Permission = Permission.ReadWrite;
         }
 
@@ -40,11 +48,12 @@ namespace GameArchitect.Design.Metadata
                 _parameters.AddRange(
                     Native
                         .GetParameters()
-                        .Select(o => new ParameterInfo(this, DeclaringType, o)));
+                        .Select(o => MetadataProvider.Create(this, DeclaringType, o)));
 
                 return _parameters;
             }
         }
+        IList<TParameterInfo> IFunctionInfo<TParameterInfo>.Parameters => Parameters.Cast<TParameterInfo>().ToList();
 
         public override string GetPath()
         {
@@ -59,5 +68,11 @@ namespace GameArchitect.Design.Metadata
                        .Cast<IDelegatedValidatable>()
                        .All(a => a.IsValid(logger, this));
         }
+    }
+
+    public sealed class FunctionInfo : FunctionInfoBase<TypeInfo, ParameterInfo>
+    {
+        public FunctionInfo(IMetadataProvider metadataProvider, TypeInfo declaringType, MethodInfo native) 
+            : base(metadataProvider, declaringType, native) { }
     }
 }
