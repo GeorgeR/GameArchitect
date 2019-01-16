@@ -4,8 +4,10 @@ using System.IO;
 using System.Threading.Tasks;
 using GameArchitect.DependencyInjection;
 using GameArchitect.Design;
+using GameArchitect.Design.CXX.Metadata;
 using GameArchitect.Design.Unreal.Metadata;
 using GameArchitect.Tasks;
+using GameArchitect.Tasks.CodeGeneration.CXX;
 using GameArchitect.Tasks.CodeGeneration.Unreal;
 using GameArchitect.Tasks.CodeGeneration.Unreal.Templates;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +30,7 @@ namespace SomeGame.Tasks.CodeGeneration.Unreal
         {
             base.Setup(services);
             
+            services.AddConfigurations(typeof(CXXConfiguration).Assembly);
             services.AddConfigurations(typeof(UnrealConfiguration).Assembly);
         }
 
@@ -35,6 +38,7 @@ namespace SomeGame.Tasks.CodeGeneration.Unreal
         {
             base.PostSetup(serviceProvider);
 
+            Exports.RegisterMetadataProvider(serviceProvider.GetService<CXXMetadataProvider>());
             Exports.RegisterMetadataProvider(serviceProvider.GetService<UnrealMetadataProvider>());
         }
     }
